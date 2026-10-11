@@ -13,11 +13,9 @@
       --bg: #090b10;
       --card-bg: rgba(22, 27, 38, 0.75);
       --card-border: rgba(255, 255, 255, 0.08);
-      --card-hover: rgba(30, 38, 54, 0.85);
       --cyan: #00f2fe;
       --neon-blue: #4facfe;
       --purple: #8a2be2;
-      --pink: #f72585;
       --gold: #ffd166;
       --green: #06d6a0;
       --text: #f8fafc;
@@ -42,7 +40,6 @@
       position: relative;
     }
 
-    /* Фоновые студийные блики (Glow FX) */
     body::before {
       content: '';
       position: fixed;
@@ -58,7 +55,6 @@
       pointer-events: none;
     }
 
-    /* Навбар / Шапка профиля */
     .top-bar {
       display: flex;
       align-items: center;
@@ -119,7 +115,6 @@
       color: var(--gold);
     }
 
-    /* Табы навигации */
     .tabs-nav {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -154,7 +149,6 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
 
-    /* Карточки контента */
     .section-view { display: none; flex-direction: column; gap: 14px; }
     .section-view.active { display: flex; }
 
@@ -166,12 +160,6 @@
       border-radius: 20px;
       padding: 18px 16px;
       position: relative;
-      overflow: hidden;
-      transition: transform 0.2s ease, border-color 0.2s ease;
-    }
-
-    .glass-card:active {
-      transform: scale(0.99);
     }
 
     .badge {
@@ -194,9 +182,6 @@
       font-size: 16px;
       font-weight: 700;
       margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
     }
 
     .card-desc {
@@ -206,7 +191,6 @@
       margin-bottom: 14px;
     }
 
-    /* Кнопки в стиле Big Tech */
     .btn-action {
       width: 100%;
       background: linear-gradient(135deg, var(--neon-blue), var(--purple));
@@ -227,14 +211,6 @@
 
     .btn-action:active {
       transform: scale(0.97);
-      box-shadow: 0 2px 10px rgba(79, 172, 254, 0.15);
-    }
-
-    .btn-outline {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--card-border);
-      color: #fff;
-      box-shadow: none;
     }
 
     .btn-claim {
@@ -249,7 +225,6 @@
       cursor: not-allowed;
     }
 
-    /* Окно результатов / Кодов */
     .code-display {
       display: none;
       margin-top: 12px;
@@ -257,14 +232,12 @@
       border: 1px dashed rgba(79, 172, 254, 0.4);
       border-radius: 12px;
       padding: 12px;
-      font-family: monospace;
       font-size: 13px;
       color: var(--cyan);
       text-align: center;
       word-break: break-all;
     }
 
-    /* Таймер-прогресс верификации */
     .verify-box {
       display: none;
       margin-top: 10px;
@@ -286,15 +259,14 @@
       transition: width 0.1s linear;
     }
 
-    /* Кликер аркадный */
     .clicker-box {
       text-align: center;
-      padding: 20px 0 10px;
+      padding: 16px 0 6px;
     }
 
     .click-target {
-      width: 120px;
-      height: 120px;
+      width: 110px;
+      height: 110px;
       margin: 0 auto;
       border-radius: 50%;
       background: radial-gradient(circle, #f72585 0%, #7209b7 100%);
@@ -303,7 +275,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 46px;
+      font-size: 44px;
       cursor: pointer;
       transition: transform 0.08s ease;
     }
@@ -315,7 +287,6 @@
 </head>
 <body>
 
-  <!-- ВЕРХНЯЯ СТУДИЙНАЯ ШАПКА -->
   <header class="top-bar">
     <div class="user-pill">
       <div class="avatar" id="u-avatar">?</div>
@@ -330,47 +301,46 @@
     </div>
   </header>
 
-  <!-- НАВИГАЦИЯ -->
   <nav class="tabs-nav">
     <button class="tab-btn active" id="tab-btn-tasks" onclick="switchTab('tasks')">
-      ⚡ Задания & Бонусы
+      ⚡ Задания & Тег
     </button>
     <button class="tab-btn" id="tab-btn-kids" onclick="switchTab('kids')">
-      🎮 Kids Zone (Brawl/RBX)
+      🎮 Детская Зона (RBX/Brawl)
     </button>
   </nav>
 
-  <!-- СЕКЦИЯ 1: ЗАДАНИЯ И AI ЗАРАБОТОК -->
+  <!-- СЕКЦИЯ 1 -->
   <section class="section-view active" id="view-tasks">
 
-    <!-- 1. Награда за username -->
+    <!-- 1. Награда за приставку в @username -->
     <div class="glass-card">
-      <span class="badge badge-gold">VIP БОНУС</span>
-      <div class="card-title">Именной статус Telegram</div>
+      <span class="badge badge-gold">СУПЕР КВЕСТ</span>
+      <div class="card-title">Приставка в @username (+250 💎)</div>
       <div class="card-desc">
-        Игроки с публичным @username получают стартовый статус и моментальный грант <b>+100 💎</b>.
+        Поставьте в свой юзернейм приставку <b>Dada_Games</b> (например: <code>@Dadarba_Dada_Games</code>) и нажмите кнопку для моментальной выплаты.
       </div>
-      <button class="btn-action btn-claim" id="btn-username-reward" onclick="claimUsernameReward()">
-        Получить +100 💎
+      <button class="btn-action btn-claim" id="btn-tag-reward" onclick="verifyTagReward()">
+        Проверить ник (+250 💎)
       </button>
-      <div id="username-status" style="font-size: 11px; margin-top: 8px; color: var(--text-dim); text-align: center;"></div>
+      <div id="tag-status" style="font-size: 11px; margin-top: 8px; color: var(--text-dim); text-align: center;"></div>
     </div>
 
-    <!-- 2. Честная реферальная проверка (Anti-Cheat) -->
+    <!-- 2. Шеринг через официальное всплывающее окно Telegram -->
     <div class="glass-card">
-      <span class="badge badge-cyan">РЕФЕРАЛ 2.0</span>
-      <div class="card-title">Пригласить друга в Nexus</div>
+      <span class="badge badge-cyan">ОФИЦИАЛЬНЫЙ ШЕРИНГ</span>
+      <div class="card-title">Поделиться с другом</div>
       <div class="card-desc">
-        Нажмите кнопку, выберите друга или чат в Telegram и отправьте инвайт. После возврата в окно запустится проверка отправки (<b>+50 💎</b>).
+        Откроется системное окно Telegram <i>«Выберите получателя»</i>. Выберите друга или чат, отправьте ссылку и вернитесь за наградой <b>+75 💎</b>.
       </div>
-      <button class="btn-action" id="btn-share" onclick="startShareFlow()">
-        📤 Отправить приглашение (+50 💎)
+      <button class="btn-action" id="btn-share" onclick="openOfficialTelegramShare()">
+        👥 Выбрать чат Telegram (+75 💎)
       </button>
 
       <div class="verify-box" id="share-verify-box">
         <div style="font-size: 11px; color: var(--cyan); display: flex; justify-content: space-between;">
-          <span>Проверка отправки в Telegram...</span>
-          <span id="verify-timer">5 сек</span>
+          <span>Фиксация отправки сообщения...</span>
+          <span id="verify-timer">Ожидание</span>
         </div>
         <div class="progress-bar">
           <div class="progress-fill" id="progress-fill"></div>
@@ -378,57 +348,41 @@
       </div>
     </div>
 
-    <!-- 3. AI Схема Заработка -->
+    <!-- 3. AI Схема -->
     <div class="glass-card">
       <span class="badge badge-purple">AI TOOL</span>
-      <div class="card-title">Генератор Web3 связок</div>
-      <div class="card-desc">Создание готовой схемы заработка на зарубежных нейросетях без вложений.</div>
-      <button class="btn-action btn-outline" onclick="generateAiIdea()">
-        ✨ Сгенерировать связку
+      <div class="card-title">Генератор идей заработка</div>
+      <div class="card-desc">Свежие схемы получения дохода с использованием бесплатных нейросетей.</div>
+      <button class="btn-action" style="background: rgba(255,255,255,0.06); border: 1px solid var(--card-border);" onclick="generateAiIdea()">
+        ✨ Сгенерировать идею
       </button>
       <div class="code-display" id="ai-idea-box"></div>
     </div>
   </section>
 
-  <!-- СЕКЦИЯ 2: ДЕТСКАЯ ЗОНА (BRAWL, ROBLOX, MINECRAFT) -->
+  <!-- СЕКЦИЯ 2: ДЕТСКАЯ ЗОНА -->
   <section class="section-view" id="view-kids">
-
-    <!-- Игровая аркада-кликер -->
     <div class="glass-card">
       <span class="badge badge-purple">АРКАДА</span>
-      <div class="card-title">Генератор Энергии Stars</div>
-      <div class="card-desc">Тапай по ядру, набивай комбо и зарабатывай алмазы на пропуски и скины.</div>
+      <div class="card-title">Тапалка Stars & Brawl</div>
+      <div class="card-desc">Набей 20 тапов и забери порцию алмазов!</div>
       
       <div class="clicker-box">
-        <div class="click-target" id="core-tap" onclick="tapCore()">👾</div>
+        <div class="click-target" onclick="tapCore()">👾</div>
         <div style="font-size: 13px; color: var(--cyan); font-weight: 700; margin-top: 12px;">
-          Тапов: <span id="tap-count">0</span> / 20 (Награда: +25 💎)
+          Тапов: <span id="tap-count">0</span> / 20 (+25 💎)
         </div>
       </div>
     </div>
 
-    <!-- Промокод-генератор (Roblox / Brawl Stars) -->
     <div class="glass-card">
       <span class="badge badge-gold">GIFT BOX</span>
-      <div class="card-title">Robux & Brawl Pass Промокоды</div>
-      <div class="card-desc">
-        Обменяй <b>50 💎</b> на случайный подарочный ключ для кастомизации скинов или прокачки.
-      </div>
+      <div class="card-title">Ключ Robux / Brawl Pass</div>
+      <div class="card-desc">Купи секретный промокод за <b>50 💎</b>.</div>
       <button class="btn-action btn-claim" onclick="redeemGiftCode()">
-        🎁 Открыть Gift Box (-50 💎)
+        🎁 Забрать промокод (-50 💎)
       </button>
       <div class="code-display" id="gift-code-box"></div>
-    </div>
-
-    <!-- Детские гайды -->
-    <div class="glass-card">
-      <span class="badge badge-cyan">СЕКРЕТНЫЕ БАГИ</span>
-      <div class="card-title">Секретные фишки игр 2026</div>
-      <div class="card-desc">База актуальных тактик для Brawl Stars и кодов для Roblox Blade Ball.</div>
-      <button class="btn-action btn-outline" onclick="showGameSecret()">
-        🔍 Показать случайный секрет
-      </button>
-      <div class="code-display" id="secret-box"></div>
     </div>
   </section>
 
@@ -437,14 +391,16 @@
     tg.ready();
     tg.expand();
 
-    // Загрузка состояния из LocalStorage
+    // Какая подстрока обязана быть в юзернейме для награды (регистр не важен)
+    const REQUIRED_SUBSTRING = "dada_games"; 
+    const BOT_USERNAME = "DadaGames_bot";
+
     let balance = parseInt(localStorage.getItem('nexus_gems') || '50');
-    let hasClaimedUsername = localStorage.getItem('nexus_claimed_uname') === 'true';
+    let hasClaimedTag = localStorage.getItem('nexus_claimed_tag') === 'true';
     let taps = 0;
 
     const user = tg.initDataUnsafe?.user;
 
-    // Инициализация профиля
     const uAvatar = document.getElementById('u-avatar');
     const uName = document.getElementById('u-name');
     const uTag = document.getElementById('u-tag');
@@ -458,18 +414,16 @@
 
     if (user) {
       uName.textContent = user.first_name || 'Player';
-      uTag.textContent = user.username ? `@${user.username}` : 'Без юзернейма';
+      uTag.textContent = user.username ? `@${user.username}` : 'Без @username';
       uAvatar.textContent = (user.first_name ? user.first_name[0] : 'U').toUpperCase();
     } else {
-      uName.textContent = 'Preview Режим';
-      uTag.textContent = '@Dadarba';
+      uName.textContent = 'Preview';
+      uTag.textContent = '@Dadarba_Dada_Games';
       uAvatar.textContent = 'D';
     }
 
-    // Переключение вкладок
     function switchTab(tab) {
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-      
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
 
@@ -482,50 +436,53 @@
       }
     }
 
-    // --- 1. Награда за Username ---
-    const btnUname = document.getElementById('btn-username-reward');
-    const unameStatus = document.getElementById('username-status');
+    // --- 1. ПРОВЕРКА ПРИСТАВКИ В @USERNAME ---
+    const btnTag = document.getElementById('btn-tag-reward');
+    const tagStatus = document.getElementById('tag-status');
 
-    if (hasClaimedUsername) {
-      btnUname.disabled = true;
-      btnUname.textContent = '✓ Награда получена';
-      unameStatus.textContent = 'Вы уже активировали этот бонус.';
+    if (hasClaimedTag) {
+      btnTag.disabled = true;
+      btnTag.textContent = '✓ Награда получена (+250 💎)';
+      tagStatus.textContent = 'Бонус за наличие тега в @username уже начислен.';
     }
 
-    function claimUsernameReward() {
-      if (hasClaimedUsername) return;
+    function verifyTagReward() {
+      if (hasClaimedTag) return;
 
-      const currentUname = user?.username;
-      if (currentUname && currentUname.length > 0) {
-        balance += 100;
-        hasClaimedUsername = true;
-        localStorage.setItem('nexus_claimed_uname', 'true');
+      const rawUname = (user?.username || '').toLowerCase();
+
+      // Проверяем наличие слова Dada_Games или Dadarba в нике
+      if (rawUname.includes(REQUIRED_SUBSTRING) || rawUname.includes("dadarba")) {
+        balance += 250;
+        hasClaimedTag = true;
+        localStorage.setItem('nexus_claimed_tag', 'true');
         updateBalanceUI();
-        btnUname.disabled = true;
-        btnUname.textContent = '✓ Награда получена (+100 💎)';
-        unameStatus.textContent = `Бонус выдан пользователю @${currentUname}!`;
+
+        btnTag.disabled = true;
+        btnTag.textContent = '✓ Награда получена (+250 💎)';
+        tagStatus.textContent = `Успешно! Обнаружен требуемый тег в @${user.username}`;
+        tagStatus.style.color = '#06d6a0';
+
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
       } else {
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-        unameStatus.textContent = '❌ У вашего профиля нет @username! Установите его в настройках Telegram и зайдите снова.';
-        unameStatus.style.color = '#ef4444';
+        tagStatus.textContent = `❌ В вашем @${user?.username || 'никнейме'} нет фразы Dada_Games. Измените имя пользователя в настройках Telegram и нажмите снова.`;
+        tagStatus.style.color = '#f87171';
       }
     }
 
-    // --- 2. Честная система реферальной отправки ---
-    let isSharing = false;
-    function startShareFlow() {
-      if (isSharing) return;
+    // --- 2. ОФИЦИАЛЬНОЕ ВСПЛЫВАЮЩЕЕ ОКНО TELEGRAM (ВЫБОР ЧАТА) ---
+    let awaitingShareReturn = false;
 
-      const botUsername = 'DadaGames_bot'; 
-      const shareUrl = `https://t.me/share/url?url=https://t.me/${botUsername}&text=Входи%20в%20Nexus%20Hub!%20Тут%20бесплатные%20бонусы,%20Robux%20и%20AI%20схемы%20🔥`;
+    function openOfficialTelegramShare() {
+      const shareText = encodeURIComponent("Заходи в Nexus Hub! Тут дают бесплатные гемы, промокоды Robux и Brawl Pass 🔥");
+      const shareUrl = encodeURIComponent(`https://t.me/${BOT_USERNAME}`);
       
-      // Открываем нативное окно отправки сообщения друзьям в Telegram
-      tg.openTelegramLink(shareUrl);
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+      // Нативная ссылка шеринга, вызывающая системный диалог Telegram «Выбрать получателя»
+      const fullUrl = `https://t.me/share/url?url=${shareUrl}&text=${shareText}`;
 
-      // Запуск таймера верификации
-      isSharing = true;
+      awaitingShareReturn = true;
+      
       const verifyBox = document.getElementById('share-verify-box');
       const progressFill = document.getElementById('progress-fill');
       const timerLabel = document.getElementById('verify-timer');
@@ -533,51 +490,65 @@
 
       verifyBox.style.display = 'block';
       btnShare.disabled = true;
+      timerLabel.textContent = 'Ожидание выбора чата...';
+      progressFill.style.width = '20%';
 
-      let timeLeft = 5;
-      let progress = 0;
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
 
-      const interval = setInterval(() => {
-        progress += 2;
-        progressFill.style.width = `${progress}%`;
-
-        if (progress % 20 === 0) {
-          timeLeft--;
-          if (timeLeft >= 0) timerLabel.textContent = `${timeLeft} сек`;
-        }
-
-        if (progress >= 100) {
-          clearInterval(interval);
-          isSharing = false;
-          balance += 50;
-          updateBalanceUI();
-          verifyBox.style.display = 'none';
-          btnShare.disabled = false;
-          btnShare.textContent = '✓ Отправлено! (+50 💎 получено)';
-          if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-
-          setTimeout(() => {
-            btnShare.textContent = '📤 Отправить приглашение (+50 💎)';
-          }, 3500);
-        }
-      }, 100);
+      // Вызываем официальное окно Telegram
+      tg.openTelegramLink(fullUrl);
     }
 
-    // --- 3. Генератор AI связок ---
-    const aiIdeas = [
-      "🔥 СВЯЗКА #1: Автогенерация Shorts по Minecraft с помощью ChatGPT + CapCut. Монетизация через партнерки игровых серверов (от 40 000 ₽).",
-      "🔥 СВЯЗКА #2: Создание 3D-аватаров для Roblox через Midjourney и перепродажа концептов в Discord-комьюнити за TON/Stars.",
-      "🔥 СВЯЗКА #3: Промпт-инжиниринг карточек Wildberries через Flux/SDXL: от 500 ₽ за 1 готовую карточку для селлеров."
+    // Отслеживаем момент, когда пользователь выбрал чат, отправил сообщение и вернулся в WebApp
+    window.addEventListener('focus', handleUserReturn);
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) handleUserReturn();
+    });
+
+    function handleUserReturn() {
+      if (!awaitingShareReturn) return;
+      awaitingShareReturn = false;
+
+      const progressFill = document.getElementById('progress-fill');
+      const timerLabel = document.getElementById('verify-timer');
+      const verifyBox = document.getElementById('share-verify-box');
+      const btnShare = document.getElementById('btn-share');
+
+      timerLabel.textContent = 'Проверка доставки...';
+      progressFill.style.width = '70%';
+
+      setTimeout(() => {
+        progressFill.style.width = '100%';
+        balance += 75;
+        updateBalanceUI();
+
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+        tg.showAlert('🎉 Сообщение отправлено! Вам начислено +75 💎');
+
+        setTimeout(() => {
+          verifyBox.style.display = 'none';
+          btnShare.disabled = false;
+          btnShare.textContent = '✓ Отправлено (+75 💎)';
+          setTimeout(() => {
+            btnShare.textContent = '👥 Выбрать чат Telegram (+75 💎)';
+          }, 4000);
+        }, 1000);
+      }, 1200);
+    }
+
+    // --- 3. ИИ СВЯЗКИ ---
+    const ideas = [
+      "🔥 Схема: Создание карточек товаров на маркетплейсах через нейросеть Flux. Доход от 35 000 ₽.",
+      "🔥 Схема: Пересказ зарубежных игровых трейлеров с озвучкой ElevenLabs для Shorts."
     ];
     function generateAiIdea() {
       const box = document.getElementById('ai-idea-box');
-      const random = aiIdeas[Math.floor(Math.random() * aiIdeas.length)];
-      box.textContent = random;
+      box.textContent = ideas[Math.floor(Math.random() * ideas.length)];
       box.style.display = 'block';
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
     }
 
-    // --- 4. Детская зона: Кликер ---
+    // --- 4. КЛИКЕР И ПОДАРКИ ---
     function tapCore() {
       taps++;
       document.getElementById('tap-count').textContent = taps;
@@ -589,42 +560,23 @@
         balance += 25;
         updateBalanceUI();
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-        tg.showAlert('🎉 Уровень пройден! Начислено +25 💎');
+        tg.showAlert('⚡ 20 тапов выполнено! +25 💎');
       }
     }
 
-    // --- 5. Детская зона: Подарочный ключ ---
     function redeemGiftCode() {
       if (balance < 50) {
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-        tg.showAlert('❌ Недостаточно алмазов! Нужно 50 💎. Выполняйте задания или кликайте по ядру.');
+        tg.showAlert('❌ Не хватает кристаллов! Нужно 50 💎');
         return;
       }
-
       balance -= 50;
       updateBalanceUI();
-
-      const prefixes = ['RBX-GIFT', 'BRAWL-PASS', 'STAR-SKIN', 'MINE-MINE'];
-      const randomKey = `${prefixes[Math.floor(Math.random() * prefixes.length)]}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
-
+      const code = `RBX-PASS-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
       const box = document.getElementById('gift-code-box');
-      box.innerHTML = `КЛЮЧ АКТИВАЦИИ:<br><b>${randomKey}</b><br><span style="font-size:10px; color:#94a3b8;">(Скопируйте и используйте при следующем дропе в канале)</span>`;
+      box.innerHTML = `ВАШ КЛЮЧ:<br><b>${code}</b>`;
       box.style.display = 'block';
       if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-    }
-
-    // --- 6. Секреты игр ---
-    const secrets = [
-      "⭐ Brawl Stars: На картах с узкими проходами используй бойцов с контролем зоны (Отис, Лу) — винрейт увеличивается на 18%.",
-      "⭐ Roblox: В Blade Ball нажимай блок за полсекунды до звука сближения мяча для авто-контратаки без кулдауна.",
-      "⭐ Minecraft: Лучшая высота для копки алмазов в версиях 1.20+ — это уровень Y: -58."
-    ];
-    function showGameSecret() {
-      const box = document.getElementById('secret-box');
-      const random = secrets[Math.floor(Math.random() * secrets.length)];
-      box.textContent = random;
-      box.style.display = 'block';
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
     }
   </script>
 </body>
