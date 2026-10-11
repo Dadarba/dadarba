@@ -3,30 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-  <title>Nexus Hub — AI & Gaming Ecosystem</title>
+  <title>Nexus Studio OS — AI & Gaming Hub</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #090b10;
-      --card-bg: rgba(22, 27, 38, 0.75);
+      --bg: #07090e;
+      --card: rgba(18, 24, 38, 0.7);
       --card-border: rgba(255, 255, 255, 0.08);
       --cyan: #00f2fe;
-      --neon-blue: #4facfe;
+      --blue: #4facfe;
       --purple: #8a2be2;
+      --pink: #f72585;
       --gold: #ffd166;
       --green: #06d6a0;
       --text: #f8fafc;
-      --text-dim: #94a3b8;
+      --muted: #94a3b8;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
@@ -35,355 +36,385 @@
       background-color: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding: 16px 14px 40px;
+      padding: 12px 12px 60px;
       overflow-x: hidden;
-      position: relative;
     }
 
-    body::before {
-      content: '';
+    /* Фоновые неоновые сферы */
+    .glow-sphere {
       position: fixed;
-      top: -120px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 320px;
-      height: 320px;
-      background: radial-gradient(circle, rgba(79, 172, 254, 0.22) 0%, rgba(138, 43, 226, 0.12) 60%, transparent 100%);
+      width: 280px;
+      height: 280px;
       border-radius: 50%;
-      filter: blur(50px);
+      filter: blur(80px);
       z-index: -1;
       pointer-events: none;
+      opacity: 0.25;
     }
+    .glow-1 { top: -60px; left: -60px; background: var(--blue); }
+    .glow-2 { bottom: 100px; right: -60px; background: var(--purple); }
 
-    .top-bar {
+    /* Верхняя панель */
+    .header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: rgba(18, 22, 32, 0.85);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      background: rgba(14, 19, 30, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--card-border);
-      border-radius: 20px;
+      border-radius: 18px;
       padding: 10px 14px;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
-
-    .user-pill {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
+    .user-badge { display: flex; align-items: center; gap: 10px; }
     .avatar {
-      width: 38px;
-      height: 38px;
+      width: 40px;
+      height: 40px;
       border-radius: 12px;
-      background: linear-gradient(135deg, var(--neon-blue), var(--purple));
+      background: linear-gradient(135deg, var(--blue), var(--purple));
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
       font-size: 16px;
-      box-shadow: 0 4px 14px rgba(79, 172, 254, 0.3);
+      box-shadow: 0 4px 14px rgba(79, 172, 254, 0.35);
     }
-
-    .user-info .name {
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 1.2;
-    }
-
-    .user-info .tag {
-      font-size: 11px;
-      color: var(--neon-blue);
-      font-weight: 600;
-    }
-
-    .balance-chip {
-      background: rgba(255, 209, 102, 0.12);
-      border: 1px solid rgba(255, 209, 102, 0.35);
+    .user-meta .name { font-size: 14px; font-weight: 700; line-height: 1.2; }
+    .user-meta .tag { font-size: 11px; color: var(--cyan); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+    
+    .wallet-chip {
+      background: rgba(255, 209, 102, 0.1);
+      border: 1px solid rgba(255, 209, 102, 0.3);
       padding: 6px 12px;
       border-radius: 14px;
       display: flex;
       align-items: center;
       gap: 6px;
-    }
-
-    .balance-chip span {
-      font-size: 15px;
       font-weight: 800;
       color: var(--gold);
+      font-size: 15px;
     }
 
-    .tabs-nav {
+    /* Навигатор 3 таба */
+    .nav-tabs {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      background: rgba(15, 20, 30, 0.8);
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+      background: rgba(12, 16, 26, 0.9);
       border: 1px solid var(--card-border);
-      padding: 5px;
+      padding: 4px;
       border-radius: 16px;
-      margin-bottom: 18px;
+      margin-bottom: 14px;
     }
-
     .tab-btn {
       background: transparent;
       border: none;
-      color: var(--text-dim);
-      padding: 10px;
-      font-size: 13px;
+      color: var(--muted);
+      padding: 10px 4px;
+      font-size: 12px;
       font-weight: 700;
       border-radius: 12px;
       cursor: pointer;
-      transition: all 0.25s ease;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(79, 172, 254, 0.2), rgba(138, 43, 226, 0.2));
+      border: 1px solid rgba(79, 172, 254, 0.4);
+      color: #fff;
+    }
+
+    .tab-view { display: none; flex-direction: column; gap: 12px; }
+    .tab-view.active { display: flex; }
+
+    /* Универсальная стеклянная карточка */
+    .card {
+      background: var(--card);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 16px;
+      position: relative;
+    }
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+    .b-gold { background: rgba(255, 209, 102, 0.15); color: var(--gold); border: 1px solid rgba(255, 209, 102, 0.3); }
+    .b-cyan { background: rgba(0, 242, 254, 0.15); color: var(--cyan); border: 1px solid rgba(0, 242, 254, 0.3); }
+    .b-purple { background: rgba(138, 43, 226, 0.15); color: #c084fc; border: 1px solid rgba(138, 43, 226, 0.3); }
+    .b-green { background: rgba(6, 214, 160, 0.15); color: var(--green); border: 1px solid rgba(6, 214, 160, 0.3); }
+
+    .c-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .c-desc { font-size: 12px; color: var(--muted); line-height: 1.4; margin-bottom: 12px; }
+
+    /* Кнопки */
+    .btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
+      box-shadow: 0 4px 14px rgba(79, 172, 254, 0.25);
     }
+    .btn:active { transform: scale(0.98); }
+    .btn-green { background: linear-gradient(135deg, var(--green), #059669); box-shadow: 0 4px 14px rgba(6, 214, 160, 0.25); }
+    .btn-sub { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); box-shadow: none; }
+    .btn:disabled { background: #1e2638; color: #64748b; box-shadow: none; cursor: not-allowed; }
 
-    .tab-btn.active {
-      background: linear-gradient(135deg, rgba(79, 172, 254, 0.25), rgba(138, 43, 226, 0.25));
-      border: 1px solid rgba(79, 172, 254, 0.4);
-      color: #fff;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    }
-
-    .section-view { display: none; flex-direction: column; gap: 14px; }
-    .section-view.active { display: flex; }
-
-    .glass-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      padding: 18px 16px;
-      position: relative;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 4px 10px;
-      border-radius: 8px;
-      font-size: 10px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 10px;
-    }
-
-    .badge-cyan { background: rgba(0, 242, 254, 0.15); color: var(--cyan); border: 1px solid rgba(0, 242, 254, 0.3); }
-    .badge-purple { background: rgba(138, 43, 226, 0.15); color: #d8b4fe; border: 1px solid rgba(138, 43, 226, 0.3); }
-    .badge-gold { background: rgba(255, 209, 102, 0.15); color: var(--gold); border: 1px solid rgba(255, 209, 102, 0.3); }
-
-    .card-title {
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    .card-desc {
-      font-size: 12px;
-      color: var(--text-dim);
-      line-height: 1.45;
-      margin-bottom: 14px;
-    }
-
-    .btn-action {
-      width: 100%;
-      background: linear-gradient(135deg, var(--neon-blue), var(--purple));
-      color: #ffffff;
-      border: none;
-      border-radius: 14px;
-      padding: 13px 16px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 6px 20px rgba(79, 172, 254, 0.25);
-      transition: all 0.2s ease;
-    }
-
-    .btn-action:active {
-      transform: scale(0.97);
-    }
-
-    .btn-claim {
-      background: linear-gradient(135deg, #06d6a0, #059669);
-      box-shadow: 0 6px 20px rgba(6, 214, 160, 0.25);
-    }
-
-    .btn-claim:disabled {
-      background: #252e3e;
-      color: #64748b;
-      box-shadow: none;
-      cursor: not-allowed;
-    }
-
-    .code-display {
-      display: none;
-      margin-top: 12px;
-      background: #06090e;
-      border: 1px dashed rgba(79, 172, 254, 0.4);
-      border-radius: 12px;
-      padding: 12px;
-      font-size: 13px;
-      color: var(--cyan);
-      text-align: center;
-      word-break: break-all;
-    }
-
-    .verify-box {
+    /* Поля вывода */
+    .res-box {
       display: none;
       margin-top: 10px;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 6px;
-      background: rgba(255, 255, 255, 0.08);
+      background: #05070c;
+      border: 1px dashed rgba(79, 172, 254, 0.3);
       border-radius: 10px;
-      overflow: hidden;
-      margin-top: 6px;
+      padding: 10px;
+      font-size: 12px;
+      color: var(--cyan);
+      line-height: 1.4;
+      word-break: break-word;
     }
 
-    .progress-fill {
-      width: 0%;
-      height: 100%;
-      background: linear-gradient(90deg, var(--neon-blue), var(--green));
-      transition: width 0.1s linear;
-    }
-
-    .clicker-box {
+    /* Стрик бар */
+    .streak-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 10px; }
+    .streak-day {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 6px 2px;
       text-align: center;
-      padding: 16px 0 6px;
+      font-size: 10px;
+      color: var(--muted);
     }
+    .streak-day.claimed { background: rgba(6, 214, 160, 0.15); border-color: var(--green); color: var(--green); font-weight: 700; }
 
-    .click-target {
-      width: 110px;
-      height: 110px;
-      margin: 0 auto;
+    /* Аркада */
+    .tap-circle {
+      width: 105px;
+      height: 105px;
+      margin: 10px auto;
       border-radius: 50%;
       background: radial-gradient(circle, #f72585 0%, #7209b7 100%);
-      border: 4px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 0 35px rgba(247, 37, 133, 0.4);
+      border: 3px solid rgba(255, 255, 255, 0.25);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 44px;
+      font-size: 42px;
+      box-shadow: 0 0 30px rgba(247, 37, 133, 0.4);
       cursor: pointer;
-      transition: transform 0.08s ease;
     }
+    .tap-circle:active { transform: scale(0.92); }
 
-    .click-target:active {
-      transform: scale(0.9);
+    /* Селекты и инпуты */
+    select, input {
+      width: 100%;
+      background: #060911;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 10px;
+      color: #fff;
+      font-size: 12px;
+      margin-bottom: 8px;
+      outline: none;
     }
   </style>
 </head>
 <body>
 
-  <header class="top-bar">
-    <div class="user-pill">
+  <div class="glow-sphere glow-1"></div>
+  <div class="glow-sphere glow-2"></div>
+
+  <!-- ШАПКА -->
+  <header class="header">
+    <div class="user-badge">
       <div class="avatar" id="u-avatar">?</div>
-      <div class="user-info">
+      <div class="user-meta">
         <div class="name" id="u-name">Player</div>
         <div class="tag" id="u-tag">@anon</div>
       </div>
     </div>
-    <div class="balance-chip">
+    <div class="wallet-chip">
       <span>💎</span>
-      <span id="gem-balance">0</span>
+      <span id="u-bal">0</span>
     </div>
   </header>
 
-  <nav class="tabs-nav">
-    <button class="tab-btn active" id="tab-btn-tasks" onclick="switchTab('tasks')">
-      ⚡ Задания & Тег
-    </button>
-    <button class="tab-btn" id="tab-btn-kids" onclick="switchTab('kids')">
-      🎮 Детская Зона (RBX/Brawl)
-    </button>
+  <!-- НАВИГАЦИЯ -->
+  <nav class="nav-tabs">
+    <button class="tab-btn active" onclick="setTab('tasks')">⚡ Квесты</button>
+    <button class="tab-btn" onclick="setTab('gaming')">🎮 Гейминг</button>
+    <button class="tab-btn" onclick="setTab('ai')">🤖 AI Студия</button>
   </nav>
 
-  <!-- СЕКЦИЯ 1 -->
-  <section class="section-view active" id="view-tasks">
+  <!-- ================= ВКЛАДКА 1: КВЕСТЫ И БОНУСЫ ================= -->
+  <section class="tab-view active" id="tab-tasks">
 
-    <!-- 1. Награда за приставку в @username -->
-    <div class="glass-card">
-      <span class="badge badge-gold">СУПЕР КВЕСТ</span>
-      <div class="card-title">Приставка в @username (+250 💎)</div>
-      <div class="card-desc">
-        Поставьте в свой юзернейм приставку <b>Dada_Games</b> (например: <code>@Dadarba_Dada_Games</code>) и нажмите кнопку для моментальной выплаты.
+    <!-- 1. ЕЖЕДНЕВНЫЙ СТРИК -->
+    <div class="card">
+      <span class="badge b-green">РЕЖИМ АКТИВНОСТИ</span>
+      <div class="c-title">Календарь наград 7 дней</div>
+      <div class="c-desc">Заходи каждый день без пропусков. Награда растет ежедневно до +100 💎!</div>
+      <div class="streak-grid" id="streak-grid">
+        <div class="streak-day" id="sd-1">Д1<br>+10</div>
+        <div class="streak-day" id="sd-2">Д2<br>+20</div>
+        <div class="streak-day" id="sd-3">Д3<br>+30</div>
+        <div class="streak-day" id="sd-4">Д4<br>+40</div>
+        <div class="streak-day" id="sd-5">Д5<br>+50</div>
+        <div class="streak-day" id="sd-6">Д6<br>+70</div>
+        <div class="streak-day" id="sd-7">Д7<br>+100</div>
       </div>
-      <button class="btn-action btn-claim" id="btn-tag-reward" onclick="verifyTagReward()">
-        Проверить ник (+250 💎)
-      </button>
-      <div id="tag-status" style="font-size: 11px; margin-top: 8px; color: var(--text-dim); text-align: center;"></div>
+      <button class="btn btn-green" id="btn-streak" onclick="claimDailyStreak()">Забрать бонус дня</button>
     </div>
 
-    <!-- 2. Шеринг через официальное всплывающее окно Telegram -->
-    <div class="glass-card">
-      <span class="badge badge-cyan">ОФИЦИАЛЬНЫЙ ШЕРИНГ</span>
-      <div class="card-title">Поделиться с другом</div>
-      <div class="card-desc">
-        Откроется системное окно Telegram <i>«Выберите получателя»</i>. Выберите друга или чат, отправьте ссылку и вернитесь за наградой <b>+75 💎</b>.
+    <!-- 2. ANTI-CHEAT ШЕРИНГ -->
+    <div class="card">
+      <span class="badge b-cyan">ANTI-CHEAT ВЕРИФИКАЦИЯ</span>
+      <div class="c-title">Официальный инвайт другу (+75 💎)</div>
+      <div class="c-desc">
+        Откройте меню выбора диалога в Telegram, выберите получателя и отправьте сообщение. 
+        <b>Защита:</b> если вернуться мгновенно без отправки — награда аннулируется!
       </div>
-      <button class="btn-action" id="btn-share" onclick="openOfficialTelegramShare()">
+      <button class="btn" id="btn-share" onclick="launchAntiCheatShare()">
         👥 Выбрать чат Telegram (+75 💎)
       </button>
+      <div id="share-warn" style="font-size: 11px; margin-top: 6px; text-align: center; color: var(--muted);"></div>
+    </div>
 
-      <div class="verify-box" id="share-verify-box">
-        <div style="font-size: 11px; color: var(--cyan); display: flex; justify-content: space-between;">
-          <span>Фиксация отправки сообщения...</span>
-          <span id="verify-timer">Ожидание</span>
-        </div>
-        <div class="progress-bar">
-          <div class="progress-fill" id="progress-fill"></div>
-        </div>
+    <!-- 3. НАГРАДА ЗА @USERNAME -->
+    <div class="card">
+      <span class="badge b-gold">БРЕНДИНГ</span>
+      <div class="c-title">Тег Dada_Games в @username (+250 💎)</div>
+      <div class="c-desc">
+        Добавьте слово <b>Dada_Games</b> или <b>Dadarba</b> в ваш @username профиля Telegram и заберите грант.
       </div>
+      <button class="btn btn-green" id="btn-tag" onclick="checkUsernameTag()">Проверить никнейм (+250 💎)</button>
+      <div id="tag-out" style="font-size: 11px; margin-top: 6px; text-align: center; color: var(--muted);"></div>
     </div>
 
-    <!-- 3. AI Схема -->
-    <div class="glass-card">
-      <span class="badge badge-purple">AI TOOL</span>
-      <div class="card-title">Генератор идей заработка</div>
-      <div class="card-desc">Свежие схемы получения дохода с использованием бесплатных нейросетей.</div>
-      <button class="btn-action" style="background: rgba(255,255,255,0.06); border: 1px solid var(--card-border);" onclick="generateAiIdea()">
-        ✨ Сгенерировать идею
-      </button>
-      <div class="code-display" id="ai-idea-box"></div>
+    <!-- 4. MYSTERY BOX -->
+    <div class="card">
+      <span class="badge b-purple">ЛУТБОКС</span>
+      <div class="c-title">Таинственный кейс Nexus</div>
+      <div class="c-desc">Испытай удачу. Открытие стоит <b>30 💎</b>, шанс выиграть от 10 до 300 💎!</div>
+      <button class="btn" onclick="openMysteryBox()">🎁 Открыть кейс (-30 💎)</button>
+      <div class="res-box" id="box-res"></div>
     </div>
+
   </section>
 
-  <!-- СЕКЦИЯ 2: ДЕТСКАЯ ЗОНА -->
-  <section class="section-view" id="view-kids">
-    <div class="glass-card">
-      <span class="badge badge-purple">АРКАДА</span>
-      <div class="card-title">Тапалка Stars & Brawl</div>
-      <div class="card-desc">Набей 20 тапов и забери порцию алмазов!</div>
-      
-      <div class="clicker-box">
-        <div class="click-target" onclick="tapCore()">👾</div>
-        <div style="font-size: 13px; color: var(--cyan); font-weight: 700; margin-top: 12px;">
-          Тапов: <span id="tap-count">0</span> / 20 (+25 💎)
-        </div>
+  <!-- ================= ВКЛАДКА 2: ГЕЙМИНГ ЗОНА ================= -->
+  <section class="tab-view" id="tab-gaming">
+
+    <!-- 5. КЛИКЕР С КОМБО -->
+    <div class="card" style="text-align: center;">
+      <span class="badge b-purple">АРКАДА</span>
+      <div class="c-title">Энерго-Ядро Stars</div>
+      <div class="c-desc">Кликай быстро, чтобы поднять комбо-множитель! Набей 25 тапов.</div>
+      <div class="tap-circle" onclick="clickEnergyCore()">👾</div>
+      <div style="font-size: 12px; font-weight: 700; color: var(--cyan); margin-top: 6px;">
+        Прогресс: <span id="tap-progress">0</span> / 25 | Множитель: <span id="tap-combo">x1</span>
       </div>
     </div>
 
-    <div class="glass-card">
-      <span class="badge badge-gold">GIFT BOX</span>
-      <div class="card-title">Ключ Robux / Brawl Pass</div>
-      <div class="card-desc">Купи секретный промокод за <b>50 💎</b>.</div>
-      <button class="btn-action btn-claim" onclick="redeemGiftCode()">
-        🎁 Забрать промокод (-50 💎)
-      </button>
-      <div class="code-display" id="gift-code-box"></div>
+    <!-- 6. МЕТА-ТИРЛИСТ BRAWL STARS -->
+    <div class="card">
+      <span class="badge b-cyan">КИБЕРСПОРТ 2026</span>
+      <div class="c-title">Brawl Stars: Мета и Пики</div>
+      <div class="c-desc">Выбери режим, чтобы узнать сильнейших бравлеров по статистике побед:</div>
+      <select id="brawl-mode" onchange="showBrawlMeta()">
+        <option value="gem">💎 Захват кристаллов</option>
+        <option value="brawlball">⚽ Броулбол</option>
+        <option value="heist">💰 Ограбление</option>
+        <option value="solo">💀 Одиночное ШД</option>
+      </select>
+      <div class="res-box" id="brawl-meta-box" style="display: block;">Топ: Отис, Лу, Сту (Винрейт 64%)</div>
     </div>
+
+    <!-- 7. БАЗА ROBLOX ID & MUSIC -->
+    <div class="card">
+      <span class="badge b-gold">ROBLOX VAULT</span>
+      <div class="c-title">Коды звуков и скинов Roblox</div>
+      <div class="c-desc">Генерация эксклюзивных рабочих ID-кодов для бумбоксов и кастомизации:</div>
+      <button class="btn btn-sub" onclick="getRobloxCode()">🔍 Сгенерировать рабочий ID</button>
+      <div class="res-box" id="roblox-res"></div>
+    </div>
+
+    <!-- 8. МАГАЗИН ПРОМОКОДОВ -->
+    <div class="card">
+      <span class="badge b-green">МАРКЕТПЛЕЙС</span>
+      <div class="c-title">VIP Ключ Активации</div>
+      <div class="c-desc">Обменяй <b>100 💎</b> на премиальный ключ доступа к закрытому каналу раздач.</div>
+      <button class="btn btn-green" onclick="buyVipKey()">💳 Приобрести ключ (-100 💎)</button>
+      <div class="res-box" id="key-res"></div>
+    </div>
+
+    <!-- 9. КИБЕР-ГЕНЕРАТОР НИКОВ -->
+    <div class="card">
+      <span class="badge b-purple">ПРОФИЛЬ</span>
+      <div class="c-title">Киберспортивный генератор ников</div>
+      <div class="c-desc">Стильные никнеймы со спецсимволами для стендоффа, бравла и роблокса:</div>
+      <button class="btn btn-sub" onclick="genGamerNick()">⚡ Создать крутой ник</button>
+      <div class="res-box" id="nick-res"></div>
+    </div>
+
+  </section>
+
+  <!-- ================= ВКЛАДКА 3: AI СТУДИЯ ================= -->
+  <section class="tab-view" id="tab-ai">
+
+    <!-- 10. AI ПРОМПТ ИНЖЕНЕР -->
+    <div class="card">
+      <span class="badge b-cyan">PROMPTING</span>
+      <div class="c-title">Готовые AI Промпты для монетизации</div>
+      <div class="c-desc">Промпты для ChatGPT и Midjourney, которые используют дизайнеры и маркетологи:</div>
+      <select id="ai-cat">
+        <option value="copy">📝 Продающие тексты для Telegram</option>
+        <option value="mid">🎨 Фотореалистичные арты Midjourney</option>
+        <option value="code">💻 Генерация скриптов и Telegram-ботов</option>
+      </select>
+      <button class="btn" onclick="genAiPrompt()">✨ Извлечь промпт</button>
+      <div class="res-box" id="prompt-res"></div>
+    </div>
+
+    <!-- 11. КАЛЬКУЛЯТОР ДОХОДНОСТИ СВЯЗКИ -->
+    <div class="card">
+      <span class="badge b-gold">ФИНАНСЫ</span>
+      <div class="c-title">AI Калькулятор Окупаемости (ROI)</div>
+      <div class="c-desc">Рассчитай прогнозируемый профит связки по привлечению трафика:</div>
+      <input type="number" id="calc-budget" placeholder="Бюджет на рекламу (руб)" value="1000">
+      <button class="btn btn-sub" onclick="calcRoi()">📊 Рассчитать прогноз</button>
+      <div class="res-box" id="calc-res"></div>
+    </div>
+
+    <!-- 12. ТЕСТ НА ПРО-ГЕЙМЕРА / AI ЭКСПЕРТА -->
+    <div class="card">
+      <span class="badge b-purple">КВИЗ</span>
+      <div class="c-title">Викторина Nexus (+40 💎)</div>
+      <div class="c-desc" id="quiz-question">Вопрос: Какая нейросеть лучше всего пишет код на Node.js?</div>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn btn-sub" onclick="answerQuiz(true)">Claude 3.7 / GPT-4o</button>
+        <button class="btn btn-sub" onclick="answerQuiz(false)">Sora AI</button>
+      </div>
+      <div class="res-box" id="quiz-res"></div>
+    </div>
+
   </section>
 
   <script>
@@ -391,192 +422,310 @@
     tg.ready();
     tg.expand();
 
-    // Какая подстрока обязана быть в юзернейме для награды (регистр не важен)
-    const REQUIRED_SUBSTRING = "dada_games"; 
-    const BOT_USERNAME = "DadaGames_bot";
+    const BOT_USER = 'DadaGames_bot';
 
-    let balance = parseInt(localStorage.getItem('nexus_gems') || '50');
-    let hasClaimedTag = localStorage.getItem('nexus_claimed_tag') === 'true';
-    let taps = 0;
+    // Базовое состояние
+    let gems = parseInt(localStorage.getItem('nx_gems') || '50');
+    let streakDay = parseInt(localStorage.getItem('nx_streak_day') || '0');
+    let lastStreakTime = parseInt(localStorage.getItem('nx_last_streak') || '0');
+    let hasTagClaimed = localStorage.getItem('nx_tag_claimed') === 'true';
+    let quizDone = localStorage.getItem('nx_quiz_done') === 'true';
 
-    const user = tg.initDataUnsafe?.user;
-
+    // Рендер кошелька и пользователя
     const uAvatar = document.getElementById('u-avatar');
     const uName = document.getElementById('u-name');
     const uTag = document.getElementById('u-tag');
-    const gemBalance = document.getElementById('gem-balance');
+    const uBal = document.getElementById('u-bal');
 
-    function updateBalanceUI() {
-      gemBalance.textContent = balance;
-      localStorage.setItem('nexus_gems', balance.toString());
+    function syncUI() {
+      uBal.textContent = gems;
+      localStorage.setItem('nx_gems', gems.toString());
+      renderStreak();
     }
-    updateBalanceUI();
 
-    if (user) {
-      uName.textContent = user.first_name || 'Player';
-      uTag.textContent = user.username ? `@${user.username}` : 'Без @username';
-      uAvatar.textContent = (user.first_name ? user.first_name[0] : 'U').toUpperCase();
+    const tUser = tg.initDataUnsafe?.user;
+    if (tUser) {
+      uName.textContent = tUser.first_name || 'Player';
+      uTag.textContent = tUser.username ? `@${tUser.username}` : 'Без никнейма';
+      uAvatar.textContent = (tUser.first_name ? tUser.first_name[0] : 'U').toUpperCase();
     } else {
-      uName.textContent = 'Preview';
+      uName.textContent = 'Dadarba Admin';
       uTag.textContent = '@Dadarba_Dada_Games';
       uAvatar.textContent = 'D';
     }
+    syncUI();
 
-    function switchTab(tab) {
+    // Навигация по табам
+    function setTab(name) {
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
+      
+      const idx = name === 'tasks' ? 0 : (name === 'gaming' ? 1 : 2);
+      document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+      document.getElementById(`tab-${name}`).classList.add('active');
+    }
 
-      if (tab === 'tasks') {
-        document.getElementById('tab-btn-tasks').classList.add('active');
-        document.getElementById('view-tasks').classList.add('active');
-      } else {
-        document.getElementById('tab-btn-kids').classList.add('active');
-        document.getElementById('view-kids').classList.add('active');
+    // 1. ЕЖЕДНЕВНЫЙ СТРИК
+    const streakRewards = [10, 20, 30, 40, 50, 70, 100];
+    function renderStreak() {
+      for (let i = 1; i <= 7; i++) {
+        const el = document.getElementById(`sd-${i}`);
+        if (i <= streakDay) el.classList.add('claimed');
+        else el.classList.remove('claimed');
       }
     }
-
-    // --- 1. ПРОВЕРКА ПРИСТАВКИ В @USERNAME ---
-    const btnTag = document.getElementById('btn-tag-reward');
-    const tagStatus = document.getElementById('tag-status');
-
-    if (hasClaimedTag) {
-      btnTag.disabled = true;
-      btnTag.textContent = '✓ Награда получена (+250 💎)';
-      tagStatus.textContent = 'Бонус за наличие тега в @username уже начислен.';
-    }
-
-    function verifyTagReward() {
-      if (hasClaimedTag) return;
-
-      const rawUname = (user?.username || '').toLowerCase();
-
-      // Проверяем наличие слова Dada_Games или Dadarba в нике
-      if (rawUname.includes(REQUIRED_SUBSTRING) || rawUname.includes("dadarba")) {
-        balance += 250;
-        hasClaimedTag = true;
-        localStorage.setItem('nexus_claimed_tag', 'true');
-        updateBalanceUI();
-
-        btnTag.disabled = true;
-        btnTag.textContent = '✓ Награда получена (+250 💎)';
-        tagStatus.textContent = `Успешно! Обнаружен требуемый тег в @${user.username}`;
-        tagStatus.style.color = '#06d6a0';
-
-        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      } else {
-        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-        tagStatus.textContent = `❌ В вашем @${user?.username || 'никнейме'} нет фразы Dada_Games. Измените имя пользователя в настройках Telegram и нажмите снова.`;
-        tagStatus.style.color = '#f87171';
+    function claimDailyStreak() {
+      const now = Date.now();
+      const oneDay = 24 * 60 * 60 * 1000;
+      
+      if (now - lastStreakTime < oneDay) {
+        tg.showAlert('⏳ Вы уже забирали сегодняшнюю награду! Возвращайтесь завтра.');
+        return;
       }
+      
+      if (now - lastStreakTime > oneDay * 2) {
+        streakDay = 0; // Сброс при пропуске
+      }
+
+      streakDay = (streakDay % 7) + 1;
+      const prize = streakRewards[streakDay - 1];
+      gems += prize;
+      lastStreakTime = now;
+
+      localStorage.setItem('nx_streak_day', streakDay.toString());
+      localStorage.setItem('nx_last_streak', lastStreakTime.toString());
+      syncUI();
+
+      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      tg.showAlert(`🎉 День ${streakDay} пройден! Получено +${prize} 💎`);
     }
 
-    // --- 2. ОФИЦИАЛЬНОЕ ВСПЛЫВАЮЩЕЕ ОКНО TELEGRAM (ВЫБОР ЧАТА) ---
-    let awaitingShareReturn = false;
+    // 2. ANTI-CHEAT СИСТЕМА ШЕРИНГА (проверка времени отсутствия)
+    let shareStartTime = 0;
+    let isSharingActive = false;
 
-    function openOfficialTelegramShare() {
-      const shareText = encodeURIComponent("Заходи в Nexus Hub! Тут дают бесплатные гемы, промокоды Robux и Brawl Pass 🔥");
-      const shareUrl = encodeURIComponent(`https://t.me/${BOT_USERNAME}`);
+    function launchAntiCheatShare() {
+      const lastShare = parseInt(localStorage.getItem('nx_last_share') || '0');
+      const now = Date.now();
+
+      // Кулдаун 60 секунд между попытками
+      if (now - lastShare < 60000) {
+        const left = Math.ceil((60000 - (now - lastShare)) / 1000);
+        tg.showAlert(`⏳ Подождите ${left} сек. перед следующим инвайтом!`);
+        return;
+      }
+
+      shareStartTime = Date.now();
+      isSharingActive = true;
+
+      const txt = encodeURIComponent("Забирай бесплатные гемы 💎, Robux ключи и AI связки в Nexus OS!");
+      const url = encodeURIComponent(`https://t.me/${BOT_USER}`);
       
-      // Нативная ссылка шеринга, вызывающая системный диалог Telegram «Выбрать получателя»
-      const fullUrl = `https://t.me/share/url?url=${shareUrl}&text=${shareText}`;
-
-      awaitingShareReturn = true;
-      
-      const verifyBox = document.getElementById('share-verify-box');
-      const progressFill = document.getElementById('progress-fill');
-      const timerLabel = document.getElementById('verify-timer');
-      const btnShare = document.getElementById('btn-share');
-
-      verifyBox.style.display = 'block';
-      btnShare.disabled = true;
-      timerLabel.textContent = 'Ожидание выбора чата...';
-      progressFill.style.width = '20%';
-
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-
-      // Вызываем официальное окно Telegram
-      tg.openTelegramLink(fullUrl);
+      tg.openTelegramLink(`https://t.me/share/url?url=${url}&text=${txt}`);
+      
+      document.getElementById('share-warn').textContent = 'Ожидание реальной отправки в Telegram...';
     }
 
-    // Отслеживаем момент, когда пользователь выбрал чат, отправил сообщение и вернулся в WebApp
-    window.addEventListener('focus', handleUserReturn);
+    // Проверка при возврате в приложение
+    function verifyShareReturn() {
+      if (!isSharingActive) return;
+      isSharingActive = false;
+
+      const elapsedSeconds = (Date.now() - shareStartTime) / 1000;
+      const warn = document.getElementById('share-warn');
+
+      // Если пользователь вернулся быстрее 8 секунд — он просто закрыл окно
+      if (elapsedSeconds < 8) {
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+        warn.textContent = '❌ Слишком быстрый возврат (менее 8 сек)! Сообщение не отправлено.';
+        warn.style.color = '#f87171';
+        tg.showAlert('❌ Вы не отправили сообщение, а просто вернулись назад! Выберите чат и реально нажмите "Отправить".');
+      } else {
+        // Успешная отправка
+        gems += 75;
+        localStorage.setItem('nx_last_share', Date.now().toString());
+        syncUI();
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+        warn.textContent = '✅ Проверка пройдена! Начислено +75 💎';
+        warn.style.color = '#06d6a0';
+        tg.showAlert('🎉 Спасибо за поддержку! Награда +75 💎 успешно начислена.');
+      }
+    }
+
+    window.addEventListener('focus', verifyShareReturn);
     document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) handleUserReturn();
+      if (!document.hidden) verifyShareReturn();
     });
 
-    function handleUserReturn() {
-      if (!awaitingShareReturn) return;
-      awaitingShareReturn = false;
+    // 3. НАГРАДА ЗА @USERNAME
+    function checkUsernameTag() {
+      if (hasTagClaimed) {
+        tg.showAlert('Вы уже забирали эту награду!');
+        return;
+      }
+      const raw = (tUser?.username || '').toLowerCase();
+      const out = document.getElementById('tag-out');
 
-      const progressFill = document.getElementById('progress-fill');
-      const timerLabel = document.getElementById('verify-timer');
-      const verifyBox = document.getElementById('share-verify-box');
-      const btnShare = document.getElementById('btn-share');
-
-      timerLabel.textContent = 'Проверка доставки...';
-      progressFill.style.width = '70%';
-
-      setTimeout(() => {
-        progressFill.style.width = '100%';
-        balance += 75;
-        updateBalanceUI();
-
+      if (raw.includes('dada_games') || raw.includes('dadarba')) {
+        gems += 250;
+        hasTagClaimed = true;
+        localStorage.setItem('nx_tag_claimed', 'true');
+        syncUI();
+        out.textContent = '✅ Тег подтвержден! Получено +250 💎';
+        out.style.color = '#06d6a0';
+        document.getElementById('btn-tag').disabled = true;
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-        tg.showAlert('🎉 Сообщение отправлено! Вам начислено +75 💎');
+      } else {
+        out.textContent = '❌ Тег Dada_Games не найден в вашем никнейме!';
+        out.style.color = '#f87171';
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+        tg.showAlert('Установите в настройках Telegram юзернейм с приставкой Dada_Games (например: @Dadarba_Dada_Games).');
+      }
+    }
+    if (hasTagClaimed) document.getElementById('btn-tag').disabled = true;
 
-        setTimeout(() => {
-          verifyBox.style.display = 'none';
-          btnShare.disabled = false;
-          btnShare.textContent = '✓ Отправлено (+75 💎)';
-          setTimeout(() => {
-            btnShare.textContent = '👥 Выбрать чат Telegram (+75 💎)';
-          }, 4000);
-        }, 1000);
-      }, 1200);
+    // 4. MYSTERY BOX
+    function openMysteryBox() {
+      if (gems < 30) {
+        tg.showAlert('Не хватает алмазов! Нужно 30 💎');
+        return;
+      }
+      gems -= 30;
+      const drops = [10, 15, 25, 40, 50, 80, 150, 300];
+      const win = drops[Math.floor(Math.random() * drops.length)];
+      gems += win;
+      syncUI();
+
+      const box = document.getElementById('box-res');
+      box.style.display = 'block';
+      box.innerHTML = `🎁 ВЫПАЛО: <b>+${win} 💎</b> (Чистый итог: ${win >= 30 ? '+' : ''}${win - 30} 💎)`;
+      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     }
 
-    // --- 3. ИИ СВЯЗКИ ---
-    const ideas = [
-      "🔥 Схема: Создание карточек товаров на маркетплейсах через нейросеть Flux. Доход от 35 000 ₽.",
-      "🔥 Схема: Пересказ зарубежных игровых трейлеров с озвучкой ElevenLabs для Shorts."
+    // 5. КЛИКЕР С КОМБО
+    let taps = 0;
+    let combo = 1;
+    let lastTapTime = 0;
+
+    function clickEnergyCore() {
+      const now = Date.now();
+      if (now - lastTapTime < 350) combo = Math.min(combo + 1, 4);
+      else combo = 1;
+      lastTapTime = now;
+
+      taps += combo;
+      document.getElementById('tap-combo').textContent = `x${combo}`;
+      document.getElementById('tap-progress').textContent = taps;
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+
+      if (taps >= 25) {
+        taps = 0;
+        gems += 20;
+        syncUI();
+        document.getElementById('tap-progress').textContent = '0';
+        tg.showAlert('⚡ Энергия собрана! +20 💎 начислено!');
+      }
+    }
+
+    // 6. BRAWL STARS META
+    const metas = {
+      gem: "💎 Захват кристаллов: Отис, Лу, Сту, Тара (Контроль центра 67%)",
+      brawlball: "⚽ Броулбол: Фрэнк, Сэм, Макс, Мортис (Высокий пуш-потенциал)",
+      heist: "💰 Ограбление: Чак, Коллет, Вольт, Брок (ДПС по сейфу 80%+)",
+      solo: "💀 Одиночное ШД: Корделиус, Эдгар, Кит, Леон (Выживаемость в кустах)"
+    };
+    function showBrawlMeta() {
+      const val = document.getElementById('brawl-mode').value;
+      const b = document.getElementById('brawl-meta-box');
+      b.textContent = metas[val];
+    }
+
+    // 7. ROBLOX КОДЫ
+    const rbxCodes = [
+      "🔊 Boombox ID: 1843526173 (Phonk Cyber Remix)",
+      "🔊 Boombox ID: 9043827110 (Brawl Stars Drill Remix)",
+      "👑 Skin Asset: 694204812 (Cyberpunk Neon Mask)"
     ];
-    function generateAiIdea() {
-      const box = document.getElementById('ai-idea-box');
-      box.textContent = ideas[Math.floor(Math.random() * ideas.length)];
-      box.style.display = 'block';
+    function getRobloxCode() {
+      const res = document.getElementById('roblox-res');
+      res.style.display = 'block';
+      res.textContent = rbxCodes[Math.floor(Math.random() * rbxCodes.length)];
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
     }
 
-    // --- 4. КЛИКЕР И ПОДАРКИ ---
-    function tapCore() {
-      taps++;
-      document.getElementById('tap-count').textContent = taps;
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('rigid');
-
-      if (taps >= 20) {
-        taps = 0;
-        document.getElementById('tap-count').textContent = '0';
-        balance += 25;
-        updateBalanceUI();
-        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-        tg.showAlert('⚡ 20 тапов выполнено! +25 💎');
-      }
-    }
-
-    function redeemGiftCode() {
-      if (balance < 50) {
-        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-        tg.showAlert('❌ Не хватает кристаллов! Нужно 50 💎');
+    // 8. VIP КЛЮЧ
+    function buyVipKey() {
+      if (gems < 100) {
+        tg.showAlert('Не хватает алмазов! Нужно 100 💎');
         return;
       }
-      balance -= 50;
-      updateBalanceUI();
-      const code = `RBX-PASS-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
-      const box = document.getElementById('gift-code-box');
-      box.innerHTML = `ВАШ КЛЮЧ:<br><b>${code}</b>`;
-      box.style.display = 'block';
+      gems -= 100;
+      syncUI();
+      const code = `NEXUS-VIP-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+      const res = document.getElementById('key-res');
+      res.style.display = 'block';
+      res.innerHTML = `КЛЮЧ: <b>${code}</b><br><small>Активируйте в боте при дропе</small>`;
       if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+    }
+
+    // 9. ГЕНЕРАТОР НИКОВ
+    const nicknames = [
+      "⚡ 乂Dadarba_God乂", "☠️ 乃尺卂山ㄥ_ズ工几ム", "👑 𝓥𝓘𝓟_𝓝𝓮𝔁𝓾𝓼", 
+      "🗡️ Shadow_Strike_2026", "🎮 尺ㄖ乃ㄥㄖ乂_乃ㄖ丂丂"
+    ];
+    function genGamerNick() {
+      const res = document.getElementById('nick-res');
+      res.style.display = 'block';
+      res.textContent = nicknames[Math.floor(Math.random() * nicknames.length)];
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    }
+
+    // 10. AI ПРОМПТЫ
+    const prompts = {
+      copy: "⚡ 'Напиши продающий пост для Telegram в стиле Storytelling о заработке школьника на арбитраже...'",
+      mid: "🎨 'Futuristic cybernetic samurai in Tokyo neon street, 8k resolution, octane render, unreal engine 5 --ar 16:9'",
+      code: "💻 'Напиши каркас Telegram-бота на telegraf с обработкой инлайн-кнопок и сохранением баланса...'"
+    };
+    function genAiPrompt() {
+      const cat = document.getElementById('ai-cat').value;
+      const res = document.getElementById('prompt-res');
+      res.style.display = 'block';
+      res.textContent = prompts[cat];
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    }
+
+    // 11. КАЛЬКУЛЯТОР ROI
+    function calcRoi() {
+      const b = parseFloat(document.getElementById('calc-budget').value) || 0;
+      const profit = Math.round(b * 1.85);
+      const res = document.getElementById('calc-res');
+      res.style.display = 'block';
+      res.innerHTML = `Прогноз: Выручка ~<b>${profit} ₽</b> (ROI: +85%). Чистая прибыль: <b>${profit - b} ₽</b>`;
+    }
+
+    // 12. ВИКТОРИНА
+    function answerQuiz(isCorrect) {
+      if (quizDone) {
+        tg.showAlert('Вы уже прошли этот тест!');
+        return;
+      }
+      const res = document.getElementById('quiz-res');
+      res.style.display = 'block';
+      if (isCorrect) {
+        gems += 40;
+        quizDone = true;
+        localStorage.setItem('nx_quiz_done', 'true');
+        syncUI();
+        res.textContent = '✅ Верно! Начислено +40 💎';
+        res.style.color = '#06d6a0';
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      } else {
+        res.textContent = '❌ Неверно! Sora генерирует видео, а не код.';
+        res.style.color = '#f87171';
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+      }
     }
   </script>
 </body>
