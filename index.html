@@ -2,159 +2,630 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>AI Hub & Заработок</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+  <title>Nexus Hub — AI & Gaming Ecosystem</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --accent: #38bdf8;
-      --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+      --bg: #090b10;
+      --card-bg: rgba(22, 27, 38, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover: rgba(30, 38, 54, 0.85);
+      --cyan: #00f2fe;
+      --neon-blue: #4facfe;
+      --purple: #8a2be2;
+      --pink: #f72585;
+      --gold: #ffd166;
+      --green: #06d6a0;
       --text: #f8fafc;
-      --text-muted: #94a3b8;
+      --text-dim: #94a3b8;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding: 16px; min-height: 100vh; }
-    
-    .header { text-align: center; margin-bottom: 20px; }
-    .header h1 { font-size: 22px; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
 
-    .balance-card {
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 16px;
-      text-align: center;
-      margin-bottom: 18px;
-      border: 1px solid rgba(255,255,255,0.06);
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
-    .balance-val { font-size: 32px; font-weight: 800; color: #38bdf8; margin: 6px 0; }
-    
-    .tab-content { display: flex; flex-direction: column; gap: 12px; }
-    
-    .card {
-      background: var(--card-bg);
-      border-radius: 14px;
-      padding: 16px;
-      border: 1px solid rgba(255,255,255,0.05);
-    }
-    .card h3 { font-size: 16px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
-    .card p { font-size: 13px; color: var(--text-muted); line-height: 1.4; }
 
-    .btn {
-      width: 100%;
-      background: var(--accent-gradient);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 12px;
-      font-size: 15px;
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 16px 14px 40px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Фоновые студийные блики (Glow FX) */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(79, 172, 254, 0.22) 0%, rgba(138, 43, 226, 0.12) 60%, transparent 100%);
+      border-radius: 50%;
+      filter: blur(50px);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* Навбар / Шапка профиля */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(18, 22, 32, 0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 10px 14px;
+      margin-bottom: 16px;
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--neon-blue), var(--purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+      box-shadow: 0 4px 14px rgba(79, 172, 254, 0.3);
+    }
+
+    .user-info .name {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .user-info .tag {
+      font-size: 11px;
+      color: var(--neon-blue);
       font-weight: 600;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: opacity 0.2s;
     }
-    .btn:active { opacity: 0.8; }
-    .btn-secondary { background: #334155; margin-top: 8px; }
 
-    .prompt-box {
-      background: #090d16;
-      border-radius: 8px;
+    .balance-chip {
+      background: rgba(255, 209, 102, 0.12);
+      border: 1px solid rgba(255, 209, 102, 0.35);
+      padding: 6px 12px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .balance-chip span {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--gold);
+    }
+
+    /* Табы навигации */
+    .tabs-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: rgba(15, 20, 30, 0.8);
+      border: 1px solid var(--card-border);
+      padding: 5px;
+      border-radius: 16px;
+      margin-bottom: 18px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
       padding: 10px;
       font-size: 13px;
-      color: #38bdf8;
-      margin-top: 10px;
+      font-weight: 700;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(79, 172, 254, 0.25), rgba(138, 43, 226, 0.25));
+      border: 1px solid rgba(79, 172, 254, 0.4);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Карточки контента */
+    .section-view { display: none; flex-direction: column; gap: 14px; }
+    .section-view.active { display: flex; }
+
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 18px 16px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .glass-card:active {
+      transform: scale(0.99);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    .badge-cyan { background: rgba(0, 242, 254, 0.15); color: var(--cyan); border: 1px solid rgba(0, 242, 254, 0.3); }
+    .badge-purple { background: rgba(138, 43, 226, 0.15); color: #d8b4fe; border: 1px solid rgba(138, 43, 226, 0.3); }
+    .badge-gold { background: rgba(255, 209, 102, 0.15); color: var(--gold); border: 1px solid rgba(255, 209, 102, 0.3); }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.45;
+      margin-bottom: 14px;
+    }
+
+    /* Кнопки в стиле Big Tech */
+    .btn-action {
+      width: 100%;
+      background: linear-gradient(135deg, var(--neon-blue), var(--purple));
+      color: #ffffff;
+      border: none;
+      border-radius: 14px;
+      padding: 13px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 6px 20px rgba(79, 172, 254, 0.25);
+      transition: all 0.2s ease;
+    }
+
+    .btn-action:active {
+      transform: scale(0.97);
+      box-shadow: 0 2px 10px rgba(79, 172, 254, 0.15);
+    }
+
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: #fff;
+      box-shadow: none;
+    }
+
+    .btn-claim {
+      background: linear-gradient(135deg, #06d6a0, #059669);
+      box-shadow: 0 6px 20px rgba(6, 214, 160, 0.25);
+    }
+
+    .btn-claim:disabled {
+      background: #252e3e;
+      color: #64748b;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    /* Окно результатов / Кодов */
+    .code-display {
       display: none;
-      word-break: break-word;
+      margin-top: 12px;
+      background: #06090e;
+      border: 1px dashed rgba(79, 172, 254, 0.4);
+      border-radius: 12px;
+      padding: 12px;
+      font-family: monospace;
+      font-size: 13px;
+      color: var(--cyan);
+      text-align: center;
+      word-break: break-all;
+    }
+
+    /* Таймер-прогресс верификации */
+    .verify-box {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--neon-blue), var(--green));
+      transition: width 0.1s linear;
+    }
+
+    /* Кликер аркадный */
+    .clicker-box {
+      text-align: center;
+      padding: 20px 0 10px;
+    }
+
+    .click-target {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto;
+      border-radius: 50%;
+      background: radial-gradient(circle, #f72585 0%, #7209b7 100%);
+      border: 4px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 35px rgba(247, 37, 133, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 46px;
+      cursor: pointer;
+      transition: transform 0.08s ease;
+    }
+
+    .click-target:active {
+      transform: scale(0.9);
     }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <h1>⚡ AI Cash & Prompts</h1>
-    <p>База готовых связок и инструментов</p>
-  </div>
-
-  <div class="balance-card">
-    <p style="font-size: 12px; color: var(--text-muted);">ВАШ БОНУСНЫЙ БАЛАНС</p>
-    <div class="balance-val" id="coins">50 💎</div>
-    <p style="font-size: 12px; color: #4ade80;">● Доступ к VIP-материалам активен</p>
-  </div>
-
-  <div class="tab-content">
-    <!-- Инструмент 1 -->
-    <div class="card">
-      <h3>💡 Генератор связок для заработка</h3>
-      <p>Получите готовую схему монетизации с помощью нейросетей (Telegram-каналы, арбитраж, фриланс).</p>
-      <button class="btn" id="gen-idea-btn">Сгенерировать схему</button>
-      <div class="prompt-box" id="idea-box"></div>
+  <!-- ВЕРХНЯЯ СТУДИЙНАЯ ШАПКА -->
+  <header class="top-bar">
+    <div class="user-pill">
+      <div class="avatar" id="u-avatar">?</div>
+      <div class="user-info">
+        <div class="name" id="u-name">Player</div>
+        <div class="tag" id="u-tag">@anon</div>
+      </div>
     </div>
-
-    <!-- Инструмент 2 -->
-    <div class="card">
-      <h3>🤖 Промпт дня для ChatGPT / Midjourney</h3>
-      <p>Эксклюзивный рабочий запрос для создания продающих текстов и графики.</p>
-      <button class="btn btn-secondary" id="get-prompt-btn">Забрать промпт</button>
-      <div class="prompt-box" id="prompt-box"></div>
+    <div class="balance-chip">
+      <span>💎</span>
+      <span id="gem-balance">0</span>
     </div>
+  </header>
 
-    <!-- Заработок на рефералах -->
-    <div class="card">
-      <h3>👥 Приглашай друзей — получай 💎</h3>
-      <p>За каждого друга начисляется +25 💎. Обменивайте кристаллы на доступ к закрытым курсам.</p>
-      <button class="btn" id="invite-btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-        Поделиться ссылкой (+25 💎)
+  <!-- НАВИГАЦИЯ -->
+  <nav class="tabs-nav">
+    <button class="tab-btn active" id="tab-btn-tasks" onclick="switchTab('tasks')">
+      ⚡ Задания & Бонусы
+    </button>
+    <button class="tab-btn" id="tab-btn-kids" onclick="switchTab('kids')">
+      🎮 Kids Zone (Brawl/RBX)
+    </button>
+  </nav>
+
+  <!-- СЕКЦИЯ 1: ЗАДАНИЯ И AI ЗАРАБОТОК -->
+  <section class="section-view active" id="view-tasks">
+
+    <!-- 1. Награда за username -->
+    <div class="glass-card">
+      <span class="badge badge-gold">VIP БОНУС</span>
+      <div class="card-title">Именной статус Telegram</div>
+      <div class="card-desc">
+        Игроки с публичным @username получают стартовый статус и моментальный грант <b>+100 💎</b>.
+      </div>
+      <button class="btn-action btn-claim" id="btn-username-reward" onclick="claimUsernameReward()">
+        Получить +100 💎
       </button>
+      <div id="username-status" style="font-size: 11px; margin-top: 8px; color: var(--text-dim); text-align: center;"></div>
     </div>
-  </div>
+
+    <!-- 2. Честная реферальная проверка (Anti-Cheat) -->
+    <div class="glass-card">
+      <span class="badge badge-cyan">РЕФЕРАЛ 2.0</span>
+      <div class="card-title">Пригласить друга в Nexus</div>
+      <div class="card-desc">
+        Нажмите кнопку, выберите друга или чат в Telegram и отправьте инвайт. После возврата в окно запустится проверка отправки (<b>+50 💎</b>).
+      </div>
+      <button class="btn-action" id="btn-share" onclick="startShareFlow()">
+        📤 Отправить приглашение (+50 💎)
+      </button>
+
+      <div class="verify-box" id="share-verify-box">
+        <div style="font-size: 11px; color: var(--cyan); display: flex; justify-content: space-between;">
+          <span>Проверка отправки в Telegram...</span>
+          <span id="verify-timer">5 сек</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. AI Схема Заработка -->
+    <div class="glass-card">
+      <span class="badge badge-purple">AI TOOL</span>
+      <div class="card-title">Генератор Web3 связок</div>
+      <div class="card-desc">Создание готовой схемы заработка на зарубежных нейросетях без вложений.</div>
+      <button class="btn-action btn-outline" onclick="generateAiIdea()">
+        ✨ Сгенерировать связку
+      </button>
+      <div class="code-display" id="ai-idea-box"></div>
+    </div>
+  </section>
+
+  <!-- СЕКЦИЯ 2: ДЕТСКАЯ ЗОНА (BRAWL, ROBLOX, MINECRAFT) -->
+  <section class="section-view" id="view-kids">
+
+    <!-- Игровая аркада-кликер -->
+    <div class="glass-card">
+      <span class="badge badge-purple">АРКАДА</span>
+      <div class="card-title">Генератор Энергии Stars</div>
+      <div class="card-desc">Тапай по ядру, набивай комбо и зарабатывай алмазы на пропуски и скины.</div>
+      
+      <div class="clicker-box">
+        <div class="click-target" id="core-tap" onclick="tapCore()">👾</div>
+        <div style="font-size: 13px; color: var(--cyan); font-weight: 700; margin-top: 12px;">
+          Тапов: <span id="tap-count">0</span> / 20 (Награда: +25 💎)
+        </div>
+      </div>
+    </div>
+
+    <!-- Промокод-генератор (Roblox / Brawl Stars) -->
+    <div class="glass-card">
+      <span class="badge badge-gold">GIFT BOX</span>
+      <div class="card-title">Robux & Brawl Pass Промокоды</div>
+      <div class="card-desc">
+        Обменяй <b>50 💎</b> на случайный подарочный ключ для кастомизации скинов или прокачки.
+      </div>
+      <button class="btn-action btn-claim" onclick="redeemGiftCode()">
+        🎁 Открыть Gift Box (-50 💎)
+      </button>
+      <div class="code-display" id="gift-code-box"></div>
+    </div>
+
+    <!-- Детские гайды -->
+    <div class="glass-card">
+      <span class="badge badge-cyan">СЕКРЕТНЫЕ БАГИ</span>
+      <div class="card-title">Секретные фишки игр 2026</div>
+      <div class="card-desc">База актуальных тактик для Brawl Stars и кодов для Roblox Blade Ball.</div>
+      <button class="btn-action btn-outline" onclick="showGameSecret()">
+        🔍 Показать случайный секрет
+      </button>
+      <div class="code-display" id="secret-box"></div>
+    </div>
+  </section>
 
   <script>
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
 
-    const ideas = [
-      "📌 Схема: Создание карточек товаров на Wildberries через нейросети (доход от 20 000 ₽/мес).",
-      "📌 Схема: Ведение сетки Telegram-каналов с автопостингом новостей через AI и продажа рекламы.",
-      "📌 Схема: Транскрибация аудио в текст и рерайтинг для бирж фриланса с помощью ChatGPT."
+    // Загрузка состояния из LocalStorage
+    let balance = parseInt(localStorage.getItem('nexus_gems') || '50');
+    let hasClaimedUsername = localStorage.getItem('nexus_claimed_uname') === 'true';
+    let taps = 0;
+
+    const user = tg.initDataUnsafe?.user;
+
+    // Инициализация профиля
+    const uAvatar = document.getElementById('u-avatar');
+    const uName = document.getElementById('u-name');
+    const uTag = document.getElementById('u-tag');
+    const gemBalance = document.getElementById('gem-balance');
+
+    function updateBalanceUI() {
+      gemBalance.textContent = balance;
+      localStorage.setItem('nexus_gems', balance.toString());
+    }
+    updateBalanceUI();
+
+    if (user) {
+      uName.textContent = user.first_name || 'Player';
+      uTag.textContent = user.username ? `@${user.username}` : 'Без юзернейма';
+      uAvatar.textContent = (user.first_name ? user.first_name[0] : 'U').toUpperCase();
+    } else {
+      uName.textContent = 'Preview Режим';
+      uTag.textContent = '@Dadarba';
+      uAvatar.textContent = 'D';
+    }
+
+    // Переключение вкладок
+    function switchTab(tab) {
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+      
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
+
+      if (tab === 'tasks') {
+        document.getElementById('tab-btn-tasks').classList.add('active');
+        document.getElementById('view-tasks').classList.add('active');
+      } else {
+        document.getElementById('tab-btn-kids').classList.add('active');
+        document.getElementById('view-kids').classList.add('active');
+      }
+    }
+
+    // --- 1. Награда за Username ---
+    const btnUname = document.getElementById('btn-username-reward');
+    const unameStatus = document.getElementById('username-status');
+
+    if (hasClaimedUsername) {
+      btnUname.disabled = true;
+      btnUname.textContent = '✓ Награда получена';
+      unameStatus.textContent = 'Вы уже активировали этот бонус.';
+    }
+
+    function claimUsernameReward() {
+      if (hasClaimedUsername) return;
+
+      const currentUname = user?.username;
+      if (currentUname && currentUname.length > 0) {
+        balance += 100;
+        hasClaimedUsername = true;
+        localStorage.setItem('nexus_claimed_uname', 'true');
+        updateBalanceUI();
+        btnUname.disabled = true;
+        btnUname.textContent = '✓ Награда получена (+100 💎)';
+        unameStatus.textContent = `Бонус выдан пользователю @${currentUname}!`;
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      } else {
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+        unameStatus.textContent = '❌ У вашего профиля нет @username! Установите его в настройках Telegram и зайдите снова.';
+        unameStatus.style.color = '#ef4444';
+      }
+    }
+
+    // --- 2. Честная система реферальной отправки ---
+    let isSharing = false;
+    function startShareFlow() {
+      if (isSharing) return;
+
+      const botUsername = 'DadaGames_bot'; 
+      const shareUrl = `https://t.me/share/url?url=https://t.me/${botUsername}&text=Входи%20в%20Nexus%20Hub!%20Тут%20бесплатные%20бонусы,%20Robux%20и%20AI%20схемы%20🔥`;
+      
+      // Открываем нативное окно отправки сообщения друзьям в Telegram
+      tg.openTelegramLink(shareUrl);
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+
+      // Запуск таймера верификации
+      isSharing = true;
+      const verifyBox = document.getElementById('share-verify-box');
+      const progressFill = document.getElementById('progress-fill');
+      const timerLabel = document.getElementById('verify-timer');
+      const btnShare = document.getElementById('btn-share');
+
+      verifyBox.style.display = 'block';
+      btnShare.disabled = true;
+
+      let timeLeft = 5;
+      let progress = 0;
+
+      const interval = setInterval(() => {
+        progress += 2;
+        progressFill.style.width = `${progress}%`;
+
+        if (progress % 20 === 0) {
+          timeLeft--;
+          if (timeLeft >= 0) timerLabel.textContent = `${timeLeft} сек`;
+        }
+
+        if (progress >= 100) {
+          clearInterval(interval);
+          isSharing = false;
+          balance += 50;
+          updateBalanceUI();
+          verifyBox.style.display = 'none';
+          btnShare.disabled = false;
+          btnShare.textContent = '✓ Отправлено! (+50 💎 получено)';
+          if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+
+          setTimeout(() => {
+            btnShare.textContent = '📤 Отправить приглашение (+50 💎)';
+          }, 3500);
+        }
+      }, 100);
+    }
+
+    // --- 3. Генератор AI связок ---
+    const aiIdeas = [
+      "🔥 СВЯЗКА #1: Автогенерация Shorts по Minecraft с помощью ChatGPT + CapCut. Монетизация через партнерки игровых серверов (от 40 000 ₽).",
+      "🔥 СВЯЗКА #2: Создание 3D-аватаров для Roblox через Midjourney и перепродажа концептов в Discord-комьюнити за TON/Stars.",
+      "🔥 СВЯЗКА #3: Промпт-инжиниринг карточек Wildberries через Flux/SDXL: от 500 ₽ за 1 готовую карточку для селлеров."
     ];
-
-    const prompts = [
-      "⚡ Промпт: 'Напиши вирусный рекламный пост для Telegram-канала о технологиях с высоким CTR и кликабельным заголовком...'",
-      "⚡ Промпт: 'Составь пошаговый контент-план на 14 дней с темами для блога, привлекающими целевую аудиторию...'"
-    ];
-
-    let coins = 50;
-
-    // Генерация схемы
-    document.getElementById('gen-idea-btn').addEventListener('click', () => {
-      const box = document.getElementById('idea-box');
-      const random = ideas[Math.floor(Math.random() * ideas.length)];
-      box.textContent = random;
-      box.style.display = 'block';
-      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-    });
-
-    // Получение промпта
-    document.getElementById('get-prompt-btn').addEventListener('click', () => {
-      const box = document.getElementById('prompt-box');
-      const random = prompts[Math.floor(Math.random() * prompts.length)];
+    function generateAiIdea() {
+      const box = document.getElementById('ai-idea-box');
+      const random = aiIdeas[Math.floor(Math.random() * aiIdeas.length)];
       box.textContent = random;
       box.style.display = 'block';
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-    });
+    }
 
-    // Реферальная кнопка
-    document.getElementById('invite-btn').addEventListener('click', () => {
-      const botUsername = 'DadaGames_bot'; // Укажите юзернейм вашего бота
-      const shareUrl = `https://t.me/share/url?url=https://t.me/${botUsername}&text=Держи крутой AI-сервис со связками и схемами заработка! 🔥`;
-      tg.openTelegramLink(shareUrl);
-      
-      coins += 25;
-      document.getElementById('coins').textContent = `${coins} 💎`;
-    });
+    // --- 4. Детская зона: Кликер ---
+    function tapCore() {
+      taps++;
+      document.getElementById('tap-count').textContent = taps;
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('rigid');
+
+      if (taps >= 20) {
+        taps = 0;
+        document.getElementById('tap-count').textContent = '0';
+        balance += 25;
+        updateBalanceUI();
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+        tg.showAlert('🎉 Уровень пройден! Начислено +25 💎');
+      }
+    }
+
+    // --- 5. Детская зона: Подарочный ключ ---
+    function redeemGiftCode() {
+      if (balance < 50) {
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+        tg.showAlert('❌ Недостаточно алмазов! Нужно 50 💎. Выполняйте задания или кликайте по ядру.');
+        return;
+      }
+
+      balance -= 50;
+      updateBalanceUI();
+
+      const prefixes = ['RBX-GIFT', 'BRAWL-PASS', 'STAR-SKIN', 'MINE-MINE'];
+      const randomKey = `${prefixes[Math.floor(Math.random() * prefixes.length)]}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+
+      const box = document.getElementById('gift-code-box');
+      box.innerHTML = `КЛЮЧ АКТИВАЦИИ:<br><b>${randomKey}</b><br><span style="font-size:10px; color:#94a3b8;">(Скопируйте и используйте при следующем дропе в канале)</span>`;
+      box.style.display = 'block';
+      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+    }
+
+    // --- 6. Секреты игр ---
+    const secrets = [
+      "⭐ Brawl Stars: На картах с узкими проходами используй бойцов с контролем зоны (Отис, Лу) — винрейт увеличивается на 18%.",
+      "⭐ Roblox: В Blade Ball нажимай блок за полсекунды до звука сближения мяча для авто-контратаки без кулдауна.",
+      "⭐ Minecraft: Лучшая высота для копки алмазов в версиях 1.20+ — это уровень Y: -58."
+    ];
+    function showGameSecret() {
+      const box = document.getElementById('secret-box');
+      const random = secrets[Math.floor(Math.random() * secrets.length)];
+      box.textContent = random;
+      box.style.display = 'block';
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    }
   </script>
 </body>
 </html>
