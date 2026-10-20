@@ -3,31 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-  <title>Nexus Studio OS — AI & Gaming Hub</title>
+  <title>DadaGames OS — Release V2</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #07090e;
-      --card: rgba(18, 24, 38, 0.7);
-      --card-border: rgba(255, 255, 255, 0.08);
-      --cyan: #00f2fe;
-      --blue: #4facfe;
-      --purple: #8a2be2;
-      --pink: #f72585;
-      --gold: #ffd166;
+      --bg: #080711;
+      --bg-panel: #131124;
+      --card: #1b1833;
+      --card-border: #2e2954;
+      --primary: #ffbe0b;
+      --primary-shadow: #c28800;
+      --accent: #00f5d4;
+      --accent-shadow: #00a892;
+      --purple: #9b5de5;
+      --purple-shadow: #6a35b5;
+      --danger: #f15bb5;
+      --danger-shadow: #b5179e;
       --green: #06d6a0;
-      --text: #f8fafc;
-      --muted: #94a3b8;
+      --green-shadow: #048c69;
+      --text: #ffffff;
+      --muted: #9892b8;
     }
+
+    body.theme-brawl { --bg: #0d1326; --card: #192342; --card-border: #2f427a; --primary: #ffc400; --accent: #ff3d71; }
+    body.theme-mine { --bg: #09140d; --card: #12261a; --card-border: #234d33; --primary: #10b981; --accent: #a3e635; }
+    body.theme-roblox { --bg: #14080c; --card: #261018; --card-border: #4d2030; --primary: #f43f5e; --accent: #38bdf8; }
+    body.theme-matrix { --bg: #030a05; --card: #081c0d; --card-border: #12401e; --primary: #22c55e; --accent: #4ade80; }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Exo 2', sans-serif;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
@@ -35,698 +45,1634 @@
     body {
       background-color: var(--bg);
       color: var(--text);
+      padding: 8px 10px 82px;
       min-height: 100vh;
-      padding: 12px 12px 60px;
       overflow-x: hidden;
+      background-image: radial-gradient(circle at 50% 0%, rgba(155, 93, 229, 0.2), transparent 60%);
     }
 
-    /* Фоновые неоновые сферы */
-    .glow-sphere {
-      position: fixed;
-      width: 280px;
-      height: 280px;
-      border-radius: 50%;
-      filter: blur(80px);
-      z-index: -1;
-      pointer-events: none;
-      opacity: 0.25;
+    /* Бегущая строка событий */
+    .ticker-wrap {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 5px 10px;
+      font-size: 11px;
+      color: var(--accent);
+      margin-bottom: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .glow-1 { top: -60px; left: -60px; background: var(--blue); }
-    .glow-2 { bottom: 100px; right: -60px; background: var(--purple); }
+    .ticker-text {
+      display: inline-block;
+      animation: ticker 18s linear infinite;
+    }
+    @keyframes ticker {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
 
-    /* Верхняя панель */
-    .header {
+    /* Верхний игровой HUD */
+    .hud-header {
+      background: var(--card);
+      border: 2px solid var(--card-border);
+      border-radius: 18px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      box-shadow: 0 6px 0 rgba(0,0,0,0.4);
+    }
+    .hud-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: rgba(14, 19, 30, 0.85);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--card-border);
-      border-radius: 18px;
-      padding: 10px 14px;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
-    .user-badge { display: flex; align-items: center; gap: 10px; }
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, var(--blue), var(--purple));
+    .player-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .avatar-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary), var(--danger));
+      border: 2px solid #fff;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 800;
-      font-size: 16px;
-      box-shadow: 0 4px 14px rgba(79, 172, 254, 0.35);
+      font-weight: 900;
+      font-size: 19px;
+      color: #000;
+      cursor: pointer;
+      position: relative;
+      box-shadow: 0 4px 12px rgba(255, 190, 11, 0.35);
     }
-    .user-meta .name { font-size: 14px; font-weight: 700; line-height: 1.2; }
-    .user-meta .tag { font-size: 11px; color: var(--cyan); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
-    
-    .wallet-chip {
-      background: rgba(255, 209, 102, 0.1);
-      border: 1px solid rgba(255, 209, 102, 0.3);
-      padding: 6px 12px;
-      border-radius: 14px;
+    .lvl-badge {
+      position: absolute;
+      bottom: -5px;
+      right: -5px;
+      background: var(--purple);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 900;
+      padding: 2px 5px;
+      border-radius: 6px;
+      border: 1px solid #fff;
+    }
+    .p-info .p-name { font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 5px; }
+    .p-info .p-rank { font-size: 11px; color: var(--primary); font-weight: 700; }
+
+    .hud-controls { display: flex; gap: 6px; }
+    .icon-btn {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--card-border);
+      color: #fff;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      font-size: 15px;
+      cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-weight: 800;
-      color: var(--gold);
-      font-size: 15px;
+      justify-content: center;
     }
 
-    /* Навигатор 3 таба */
-    .nav-tabs {
+    /* Мультивалютная сетка */
+    .currencies-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: repeat(4, 1fr);
       gap: 6px;
-      background: rgba(12, 16, 26, 0.9);
-      border: 1px solid var(--card-border);
-      padding: 4px;
-      border-radius: 16px;
-      margin-bottom: 14px;
+      margin-bottom: 8px;
     }
-    .tab-btn {
-      background: transparent;
-      border: none;
-      color: var(--muted);
-      padding: 10px 4px;
-      font-size: 12px;
-      font-weight: 700;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.2s ease;
+    .curr-pill {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 5px 6px;
       text-align: center;
     }
-    .tab-btn.active {
-      background: linear-gradient(135deg, rgba(79, 172, 254, 0.2), rgba(138, 43, 226, 0.2));
-      border: 1px solid rgba(79, 172, 254, 0.4);
-      color: #fff;
+    .curr-pill .c-val { font-size: 13px; font-weight: 900; display: block; }
+    .curr-pill .c-lbl { font-size: 9px; color: var(--muted); text-transform: uppercase; }
+
+    /* Прогресс XP и Энергии */
+    .bars-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .bar-wrap {
+      background: rgba(0,0,0,0.45);
+      border-radius: 8px;
+      height: 14px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .bar-fill {
+      height: 100%;
+      width: 50%;
+      transition: width 0.25s ease;
+    }
+    .xp-fill { background: linear-gradient(90deg, var(--purple), var(--accent)); }
+    .en-fill { background: linear-gradient(90deg, #f59e0b, #fde047); }
+    .bar-txt {
+      position: absolute;
+      inset: 0;
+      font-size: 9px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-shadow: 0 1px 2px #000;
     }
 
-    .tab-view { display: none; flex-direction: column; gap: 12px; }
-    .tab-view.active { display: flex; }
+    /* Секции и карточки */
+    .view-section { display: none; flex-direction: column; gap: 12px; }
+    .view-section.active { display: flex; }
 
-    /* Универсальная стеклянная карточка */
-    .card {
+    .game-card {
       background: var(--card);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid var(--card-border);
+      border: 2px solid var(--card-border);
       border-radius: 18px;
-      padding: 16px;
+      padding: 14px;
+      box-shadow: 0 5px 0 rgba(0,0,0,0.35);
       position: relative;
     }
-    .badge {
-      display: inline-block;
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .g-badge {
+      font-size: 9px;
+      font-weight: 900;
+      text-transform: uppercase;
       padding: 3px 8px;
       border-radius: 6px;
-      font-size: 10px;
-      font-weight: 800;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-      letter-spacing: 0.5px;
+      background: rgba(0, 245, 212, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(0, 245, 212, 0.35);
     }
-    .b-gold { background: rgba(255, 209, 102, 0.15); color: var(--gold); border: 1px solid rgba(255, 209, 102, 0.3); }
-    .b-cyan { background: rgba(0, 242, 254, 0.15); color: var(--cyan); border: 1px solid rgba(0, 242, 254, 0.3); }
-    .b-purple { background: rgba(138, 43, 226, 0.15); color: #c084fc; border: 1px solid rgba(138, 43, 226, 0.3); }
-    .b-green { background: rgba(6, 214, 160, 0.15); color: var(--green); border: 1px solid rgba(6, 214, 160, 0.3); }
+    .g-badge.gold { background: rgba(255, 190, 11, 0.15); color: var(--primary); border-color: rgba(255, 190, 11, 0.4); }
+    .g-badge.pink { background: rgba(241, 91, 181, 0.15); color: var(--danger); border-color: rgba(241, 91, 181, 0.4); }
 
-    .c-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-    .c-desc { font-size: 12px; color: var(--muted); line-height: 1.4; margin-bottom: 12px; }
+    .g-title { font-size: 15px; font-weight: 800; margin-bottom: 4px; }
+    .g-desc { font-size: 11.5px; color: var(--muted); line-height: 1.35; margin-bottom: 10px; }
 
-    /* Кнопки */
-    .btn {
+    /* Тактильные 3D игровые кнопки */
+    .g-btn {
       width: 100%;
-      background: linear-gradient(135deg, var(--blue), var(--purple));
-      color: #fff;
+      background: var(--primary);
+      color: #000;
       border: none;
       border-radius: 12px;
-      padding: 12px;
+      padding: 11px 14px;
       font-size: 13px;
-      font-weight: 700;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
       cursor: pointer;
+      box-shadow: 0 4px 0 var(--primary-shadow);
+      transition: transform 0.08s, box-shadow 0.08s;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      box-shadow: 0 4px 14px rgba(79, 172, 254, 0.25);
     }
-    .btn:active { transform: scale(0.98); }
-    .btn-green { background: linear-gradient(135deg, var(--green), #059669); box-shadow: 0 4px 14px rgba(6, 214, 160, 0.25); }
-    .btn-sub { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); box-shadow: none; }
-    .btn:disabled { background: #1e2638; color: #64748b; box-shadow: none; cursor: not-allowed; }
+    .g-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 var(--primary-shadow);
+    }
+    .g-btn.cyan { background: var(--accent); box-shadow: 0 4px 0 var(--accent-shadow); color: #000; }
+    .g-btn.purple { background: var(--purple); box-shadow: 0 4px 0 var(--purple-shadow); color: #fff; }
+    .g-btn.pink { background: var(--danger); box-shadow: 0 4px 0 var(--danger-shadow); color: #fff; }
+    .g-btn.green { background: var(--green); box-shadow: 0 4px 0 var(--green-shadow); color: #000; }
+    .g-btn.ghost {
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 3px 0 rgba(0,0,0,0.4);
+    }
+    .g-btn:disabled {
+      background: #2a2742;
+      color: #656085;
+      box-shadow: none;
+      transform: none;
+      cursor: not-allowed;
+    }
 
-    /* Поля вывода */
-    .res-box {
-      display: none;
-      margin-top: 10px;
-      background: #05070c;
-      border: 1px dashed rgba(79, 172, 254, 0.3);
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+
+    /* Босс Арена */
+    .boss-stage {
+      background: radial-gradient(circle, rgba(241, 91, 181, 0.2) 0%, rgba(0,0,0,0.5) 80%);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 14px;
+      text-align: center;
+      position: relative;
+      margin-bottom: 10px;
+    }
+    .boss-hp-bar {
+      width: 100%;
+      height: 16px;
+      background: #090712;
       border-radius: 10px;
-      padding: 10px;
-      font-size: 12px;
-      color: var(--cyan);
-      line-height: 1.4;
+      border: 1px solid #ff3d71;
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 10px;
+    }
+    .boss-hp-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #ff0055, #ffbe0b);
+      transition: width 0.15s;
+    }
+    .boss-avatar {
+      width: 96px;
+      height: 96px;
+      margin: 6px auto;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3a0ca3, #f72585);
+      border: 3px solid #fff;
+      font-size: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 0 28px rgba(247, 37, 133, 0.6);
+      transition: transform 0.06s;
+    }
+    .boss-avatar:active { transform: scale(0.88) rotate(-4deg); }
+
+    /* Вывод результатов */
+    .out-box {
+      margin-top: 8px;
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px dashed var(--accent);
+      border-radius: 10px;
+      padding: 9px;
+      font-size: 11.5px;
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
       word-break: break-word;
     }
 
-    /* Стрик бар */
-    .streak-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 10px; }
-    .streak-day {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--card-border);
-      border-radius: 8px;
-      padding: 6px 2px;
-      text-align: center;
-      font-size: 10px;
-      color: var(--muted);
-    }
-    .streak-day.claimed { background: rgba(6, 214, 160, 0.15); border-color: var(--green); color: var(--green); font-weight: 700; }
-
-    /* Аркада */
-    .tap-circle {
-      width: 105px;
-      height: 105px;
-      margin: 10px auto;
-      border-radius: 50%;
-      background: radial-gradient(circle, #f72585 0%, #7209b7 100%);
-      border: 3px solid rgba(255, 255, 255, 0.25);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 42px;
-      box-shadow: 0 0 30px rgba(247, 37, 133, 0.4);
-      cursor: pointer;
-    }
-    .tap-circle:active { transform: scale(0.92); }
-
-    /* Селекты и инпуты */
-    select, input {
+    input, select {
       width: 100%;
-      background: #060911;
+      background: #0d0b18;
       border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 10px;
       color: #fff;
+      padding: 9px 10px;
+      border-radius: 10px;
       font-size: 12px;
       margin-bottom: 8px;
       outline: none;
+    }
+
+    /* Нижний игровой док на 6 вкладок */
+    .bottom-dock {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(13, 11, 24, 0.96);
+      backdrop-filter: blur(14px);
+      border-top: 2px solid var(--card-border);
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      padding: 6px 4px 10px;
+      z-index: 100;
+    }
+    .dock-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      font-size: 9.5px;
+      font-weight: 800;
+      cursor: pointer;
+      padding: 4px 2px;
+      border-radius: 10px;
+    }
+    .dock-btn .d-ico { font-size: 18px; }
+    .dock-btn.active {
+      color: var(--primary);
+      background: rgba(255, 190, 11, 0.12);
+    }
+
+    /* Сетка сапёра и теплицы */
+    .mine-cell {
+      aspect-ratio: 1;
+      background: #262246;
+      border: 2px solid #3d376e;
+      border-radius: 10px;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: 900;
+    }
+    .toast {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--primary), #ff7b00);
+      color: #000;
+      font-weight: 900;
+      font-size: 12px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+      z-index: 999;
+      display: none;
     }
   </style>
 </head>
 <body>
 
-  <div class="glow-sphere glow-1"></div>
-  <div class="glow-sphere glow-2"></div>
+  <div id="toast" class="toast">🎉 Награда получена!</div>
 
-  <!-- ШАПКА -->
-  <header class="header">
-    <div class="user-badge">
-      <div class="avatar" id="u-avatar">?</div>
-      <div class="user-meta">
-        <div class="name" id="u-name">Player</div>
-        <div class="tag" id="u-tag">@anon</div>
+  <!-- #13. Бегущая строка Live-событий -->
+  <div class="ticker-wrap">
+    <span>📢 LIVE:</span>
+    <div class="ticker-text" id="live-ticker">
+      🔥 Добро пожаловать в DadaGames V2 (105+ функций)! • 💎 Промокод релиза: RELEASEV2 • 🏆 Купи видеокарту во вкладке Империя для авто-дохода! • ⚡ Нажми 7 раз на аватарку для Пасхалки!
+    </div>
+  </div>
+
+  <!-- ВЕРХНИЙ ИГРОВОЙ HUD (#1-#15) -->
+  <header class="hud-header">
+    <div class="hud-top">
+      <div class="player-box">
+        <div class="avatar-box" id="hud-avatar" onclick="triggerEasterEgg()">
+          D
+          <span class="lvl-badge" id="hud-lvl">LVL 1</span>
+        </div>
+        <div class="p-info">
+          <div class="p-name">
+            <span id="hud-name">Игрок</span>
+            <span id="hud-vip" style="display:none; color:var(--primary);">👑</span>
+          </div>
+          <div class="p-rank" id="hud-rank">🥉 Бронзовая Лига</div>
+        </div>
+      </div>
+      <div class="hud-controls">
+        <button class="icon-btn" onclick="cycleTheme()" title="Сменить тему">🎨</button>
+        <button class="icon-btn" id="btn-sound" onclick="toggleSound()" title="Звук">🔊</button>
+        <button class="icon-btn" onclick="openPromoModal()" title="Промокод">🎁</button>
       </div>
     </div>
-    <div class="wallet-chip">
-      <span>💎</span>
-      <span id="u-bal">0</span>
+
+    <!-- 4 Валюты (#2) -->
+    <div class="currencies-grid">
+      <div class="curr-pill">
+        <span class="c-val" style="color:#00f5d4" id="val-gems">100</span>
+        <span class="c-lbl">💎 Алмазы</span>
+      </div>
+      <div class="curr-pill">
+        <span class="c-val" style="color:#ffbe0b" id="val-gold">250</span>
+        <span class="c-lbl">🪙 Золото</span>
+      </div>
+      <div class="curr-pill">
+        <span class="c-val" style="color:#f15bb5" id="val-trophies">0</span>
+        <span class="c-lbl">🏆 Кубки</span>
+      </div>
+      <div class="curr-pill">
+        <span class="c-val" style="color:#a3e635" id="val-idle">+0/с</span>
+        <span class="c-lbl">⚙️ Доход</span>
+      </div>
+    </div>
+
+    <!-- Полоски XP и Энергии (#1, #8) -->
+    <div class="bars-row">
+      <div class="bar-wrap">
+        <div class="bar-fill xp-fill" id="xp-bar"></div>
+        <div class="bar-txt" id="xp-txt">XP: 0 / 100</div>
+      </div>
+      <div class="bar-wrap">
+        <div class="bar-fill en-fill" id="en-bar"></div>
+        <div class="bar-txt" id="en-txt">⚡ 100 / 100</div>
+      </div>
     </div>
   </header>
 
-  <!-- НАВИГАЦИЯ -->
-  <nav class="nav-tabs">
-    <button class="tab-btn active" onclick="setTab('tasks')">⚡ Квесты</button>
-    <button class="tab-btn" onclick="setTab('gaming')">🎮 Гейминг</button>
-    <button class="tab-btn" onclick="setTab('ai')">🤖 AI Студия</button>
+  <!-- ================= ВКЛАДКА 1: ⚔️ АРЕНА И БОССЫ (RPG #16-#31) ================= -->
+  <section class="view-section active" id="sec-arena">
+
+    <!-- #16-#18. Босс Арена + 4 Боевых скилла -->
+    <div class="game-card">
+      <div class="card-head">
+        <span class="g-badge pink" id="boss-stage-lbl">БОСС #1 • СТИХИЯ: ОГОНЬ</span>
+        <span style="font-size:11px; color:var(--primary); font-weight:800;">Урон: <span id="stat-dmg">5</span> ⚔️</span>
+      </div>
+      <div class="boss-stage">
+        <div style="font-size:14px; font-weight:900; margin-bottom:4px;" id="boss-name">🐉 Кибер-Дракон Игнис</div>
+        <div class="boss-hp-bar">
+          <div class="boss-hp-fill" id="boss-hp-fill"></div>
+          <div class="bar-txt" id="boss-hp-txt">250 / 250 HP</div>
+        </div>
+        <div class="boss-avatar" id="boss-ico" onclick="hitBoss()">🐉</div>
+        <div style="font-size:11px; color:var(--muted);" id="combat-log">Тапай по боссу или используй скиллы!</div>
+      </div>
+
+      <!-- 4 Боевых скилла (#18) -->
+      <div class="grid-4">
+        <button class="g-btn ghost" onclick="castSkill('meteor')">🔥<br><small>Метеор</small></button>
+        <button class="g-btn ghost" onclick="castSkill('freeze')">❄️<br><small>Крио</small></button>
+        <button class="g-btn ghost" onclick="castSkill('thunder')">⚡<br><small>Разряд</small></button>
+        <button class="g-btn ghost" onclick="castSkill('berserk')">😡<br><small>Берсерк</small></button>
+      </div>
+    </div>
+
+    <!-- #19-#21, #30. Кузница, Зачарование, Питомцы и Наемники -->
+    <div class="game-card">
+      <span class="g-badge gold">ПРОКАЧКА ГЕРОЯ</span>
+      <div class="g-title">Кузница, Питомцы и Отряд</div>
+      <div class="g-desc">Усиливай оружие за 🪙 золото и нанимай бойцов для автоматического урона по боссам.</div>
+      <div class="grid-2">
+        <button class="g-btn" onclick="upgradeWeapon()">🗡️ Меч (+3 ⚔️)<br><small id="cost-wpn">100 🪙</small></button>
+        <button class="g-btn purple" onclick="enchantWeapon()">🔮 Зачаровать<br><small>40 💎 (Стихия)</small></button>
+        <button class="g-btn cyan" onclick="hatchPet()">🐾 Вылупить пета<br><small>75 💎 (+Авто-DPS)</small></button>
+        <button class="g-btn green" onclick="hireMerc()">💂 Нанять бойца<br><small id="cost-merc">150 🪙 (+5/с)</small></button>
+      </div>
+      <div class="out-box" id="hero-gear-out">Экипировано: Стартовый клинок | Пет: Нет | Стихия: Физическая</div>
+    </div>
+
+    <!-- #22-#24. PvP Дуэль и Башня Испытаний -->
+    <div class="game-card">
+      <span class="g-badge">КИБЕР-КОЛИЗЕЙ</span>
+      <div class="g-title">Тактическая PvP-Дуэль & Башня</div>
+      <div class="g-desc">Выбери, куда нанести удар сопернику, чтобы выиграть кубки 🏆 и золото!</div>
+      <div class="grid-3" style="margin-bottom:8px;">
+        <button class="g-btn ghost" onclick="playPvp('Голова')">🎯 В голову</button>
+        <button class="g-btn ghost" onclick="playPvp('Корпус')">🛡️ В корпус</button>
+        <button class="g-btn ghost" onclick="playPvp('Ноги')">⚡ По ногам</button>
+      </div>
+      <div class="grid-2">
+        <button class="g-btn purple" onclick="climbTower()">🗼 Штурм Башни (Этаж <span id="tower-fl">1</span>)</button>
+        <button class="g-btn pink" onclick="claimBounty()">🎯 Охота Bounty (+80 🪙)</button>
+      </div>
+      <div class="out-box" id="pvp-out">Готов к бою на Арене!</div>
+    </div>
+
+    <!-- #25, #11. Алхимия и Перерождение (Rebirth) -->
+    <div class="game-card">
+      <span class="g-badge gold">АЛХИМИЯ & ПРЕСТИЖ</span>
+      <div class="g-title">Котел Зелий & Перерождение</div>
+      <div class="grid-2">
+        <button class="g-btn cyan" onclick="brewPotion()">🧪 Сварить зелье (50 🪙)</button>
+        <button class="g-btn pink" onclick="doRebirth()">🔥 Перерождение (x<span id="rebirth-mult">1</span>)</button>
+      </div>
+      <div class="out-box" id="alchemy-out">Смешайте реагенты для случайного эликсира!</div>
+    </div>
+
+  </section>
+
+  <!-- ================= ВКЛАДКА 2: 🕹️ 18 МИНИ-ИГР И АРКАД (#32-#49) ================= -->
+  <section class="view-section" id="sec-arcade">
+
+    <!-- #32. Сапёр Cyber Mines 4x4 -->
+    <div class="game-card">
+      <div class="card-head">
+        <span class="g-badge">МИНИ-ИГРА #1</span>
+        <span style="font-size:11px; color:var(--accent);">Куш: <b id="mine-pot">0</b> 🪙</span>
+      </div>
+      <div class="g-title">💣 Кибер-Сапёр (Mines 4x4)</div>
+      <div class="g-desc">Открывай ячейки с кристаллами 💎. Нарвешься на мину 💥 — сгорит куш раунда!</div>
+      <div class="grid-4" id="mines-grid" style="margin-bottom:8px;"></div>
+      <div class="grid-2">
+        <button class="g-btn" onclick="initMines()">🔄 Новое поле (30 🪙)</button>
+        <button class="g-btn green" onclick="cashoutMines()">💰 Забрать куш</button>
+      </div>
+    </div>
+
+    <!-- #39, #40. Слоты 777 и Крэш-Ракета -->
+    <div class="game-card">
+      <span class="g-badge gold">КАЗИНО АРКАДА</span>
+      <div class="g-title">🎰 Неоновые Слоты 777 & 🚀 Крэш-Ракета</div>
+      <div style="font-size:28px; text-align:center; padding:8px; background:#090712; border-radius:12px; margin-bottom:8px;" id="slot-reels">
+        🍒 | 💎 | 7️⃣
+      </div>
+      <div class="grid-2">
+        <button class="g-btn" onclick="spinSlots()">🎰 Крутить (20 🪙)</button>
+        <button class="g-btn pink" onclick="launchRocket()">🚀 Запуск Ракеты (25 🪙)</button>
+      </div>
+      <div class="out-box" id="casino-out">Испытай удачу в слотах или поймай иксы ракеты!</div>
+    </div>
+
+    <!-- #33, #34, #36, #37, #41, #42. Набор быстрых аркад -->
+    <div class="game-card">
+      <span class="g-badge">БЫСТРЫЕ АРКАДЫ</span>
+      <div class="g-title">🕹️ Игровой Зал (12 Аркад в 1 клик)</div>
+      <div class="g-desc">Каждая победа приносит 💎 гемы, 🪙 золото и 🏆 кубки!</div>
+      <div class="grid-2">
+        <button class="g-btn ghost" onclick="playShellGame()">🎩 Напёрстки</button>
+        <button class="g-btn ghost" onclick="playSniperBar()">🎯 Тайм-Снайпер</button>
+        <button class="g-btn ghost" onclick="playCyberRps()">✂️ К-Н-Б Кибер</button>
+        <button class="g-btn ghost" onclick="playReactionTest()">⚡ Тест Реакции</button>
+        <button class="g-btn ghost" onclick="playHiLo()">🃏 Карты Hi-Lo</button>
+        <button class="g-btn ghost" onclick="playSafeCrack()">🔐 Взлом Сейфа</button>
+        <button class="g-btn ghost" onclick="playCyberDice()">🎲 Бросок Костей</button>
+        <button class="g-btn ghost" onclick="playCoinStreak()">🪙 Монетка x2</button>
+        <button class="g-btn ghost" onclick="playScratchCard()">🎫 Скретч-Лотерея</button>
+        <button class="g-btn ghost" onclick="playCpsTest()">👆 CPS-Спринт</button>
+        <button class="g-btn ghost" onclick="playMathBlitz()">🧮 Мат-Блиц</button>
+        <button class="g-btn ghost" onclick="playDungeonQuest()">🏰 Текстовый Данж</button>
+      </div>
+      <div class="out-box" id="arcade-multi-out">Выбери любую аркаду выше!</div>
+    </div>
+
+    <!-- #49. Whack-a-Bug & Колесо Фортуны (#38) -->
+    <div class="game-card">
+      <span class="g-badge pink">БОНУС-ИГРЫ</span>
+      <div class="g-title">🎡 Колесо Фортуны & 🐛 Охота на Багов</div>
+      <div class="grid-2">
+        <button class="g-btn purple" onclick="spinWheel()">🎡 Крутить Колесо (30 💎)</button>
+        <button class="g-btn cyan" onclick="whackBug()">🐛 Поймать Бага (+15 🪙)</button>
+      </div>
+      <div class="out-box" id="wheel-out">Главный джекпот колеса: 500 💎!</div>
+    </div>
+
+  </section>
+
+  <!-- ================= ВКЛАДКА 3: 🎮 ГЕЙМЕРСКИЙ ХАБ (Brawl/Roblox/MC/SO2 #50-#67) ================= -->
+  <section class="view-section" id="sec-gaming">
+
+    <!-- #50. Симулятор Starr Drops (Brawl Stars) -->
+    <div class="game-card" style="text-align:center;">
+      <span class="g-badge gold">BRAWL STARS SIMULATOR</span>
+      <div class="g-title">⭐ Открытие Starr Drop</div>
+      <div class="g-desc">Тапни 4 раза по звезде, чтобы повысить редкость от Редкого до ЛЕГЕНДАРНОГО!</div>
+      <div id="starr-box" onclick="tapStarrDrop()" style="font-size:52px; cursor:pointer; margin:8px 0; transition:transform 0.1s;">⭐</div>
+      <div style="font-weight:900; color:var(--primary); margin-bottom:8px;" id="starr-rarity">РЕДКИЙ (Тапов: 0/4)</div>
+    </div>
+
+    <!-- #52. Кейсы Standoff 2 / CS2 -->
+    <div class="game-card">
+      <span class="g-badge pink">STANDOFF 2 & CS2 CASES</span>
+      <div class="g-title">🔪 Симулятор Кейсов (Arcana & Ножи)</div>
+      <div class="grid-2">
+        <button class="g-btn" onclick="openSo2Case()">📦 Открыть Empire Case (40 🪙)</button>
+        <button class="g-btn green" onclick="sellLastSkin()">💵 Продать скин</button>
+      </div>
+      <div class="out-box" id="so2-out">Инвентарь пуст. Открой кейс!</div>
+    </div>
+
+    <!-- #51, #55, #63. Minecraft Верстак, Сиды и Команды -->
+    <div class="game-card">
+      <span class="g-badge">MINECRAFT 1.21 HUB</span>
+      <div class="g-title">⛏️ Крафт, Редкие Сиды и Чит-Команды</div>
+      <div class="grid-3">
+        <button class="g-btn ghost" onclick="craftMcItem()">⚒️ Крафт-Тест</button>
+        <button class="g-btn ghost" onclick="getMcSeed()">🌍 Топ Сид 1.21</button>
+        <button class="g-btn ghost" onclick="getMcCommand()">⚡ Команда Меч</button>
+      </div>
+      <div class="out-box" id="mc-out">Выбери инструмент Minecraft!</div>
+    </div>
+
+    <!-- #53, #54, #56, #58, #65. Roblox & Brawl Инструменты -->
+    <div class="game-card">
+      <span class="g-badge gold">ROBLOX & BRAWL PRO TOOLS</span>
+      <div class="g-title">📊 Калькуляторы, Коды и Контр-Пики</div>
+      <input type="number" id="rbx-input" placeholder="Введи сумму Robux или Гемов (например 500)" value="500">
+      <div class="grid-2">
+        <button class="g-btn cyan" onclick="calcRobuxTax()">🧮 Налог Robux (30%)</button>
+        <button class="g-btn purple" onclick="calcBrawlGems()">💎 Перевод Гемов BS</button>
+        <button class="g-btn ghost" onclick="getRobloxCodes()">🎵 Коды Roblox / Blox</button>
+        <button class="g-btn ghost" onclick="getBrawlCounter()">🛡️ Контр-Пики Мета</button>
+      </div>
+      <div class="out-box" id="gamer-calc-out">Введи число и выбери расчет!</div>
+    </div>
+
+    <!-- #57, #59, #60, #61, #64, #66. Генератор ников, прицелов и челленджей -->
+    <div class="game-card">
+      <span class="g-badge">КИБЕРСПОРТ КОНСТРУКТОР</span>
+      <div class="g-title">✨ Генератор Ников (10 стилей), Сенсы и Прицела</div>
+      <input type="text" id="nick-input" placeholder="Введи свой ник (например Dadarba)" value="Dadarba">
+      <div class="grid-3">
+        <button class="g-btn" onclick="generateStyledNick()">🔥 Кибер-Ник</button>
+        <button class="g-btn ghost" onclick="genCrosshair()">➕ Прицел SO2</button>
+        <button class="g-btn ghost" onclick="genChallenge()">🎲 Челлендж</button>
+      </div>
+      <div class="out-box" id="nick-out">Нажми «Кибер-Ник» для генерации!</div>
+    </div>
+
+  </section>
+
+  <!-- ================= ВКЛАДКА 4: 🏙️ ИМПЕРИЯ, ФЕРМА И БИРЖА (#68-#83) ================= -->
+  <section class="view-section" id="sec-empire">
+
+    <!-- #69. Живая Криптобиржа -->
+    <div class="game-card">
+      <div class="card-head">
+        <span class="g-badge">БИРЖА ТОКЕНОВ LIVE</span>
+        <span style="font-size:11px; color:var(--green);" id="market-trend">📈 Рынок растет</span>
+      </div>
+      <div class="g-title">💹 Крипто-Трейдинг ($DADA / $TON)</div>
+      <div class="g-desc">Покупай на падении и продавай на росте! Курс обновляется каждые 3 секунды.</div>
+      <div class="out-box" style="margin-bottom:8px; font-size:13px;" id="stock-board">
+        Курс $DADA: <b id="dada-price">100</b> 🪙 | У вас: <b id="dada-owned">0</b> шт.
+      </div>
+      <div class="grid-2">
+        <button class="g-btn green" onclick="buyToken()">🟢 Купить 1 $DADA</button>
+        <button class="g-btn pink" onclick="sellToken()">🔴 Продать 1 $DADA</button>
+      </div>
+    </div>
+
+    <!-- #68, #71. Майнинг-Ферма и Недвижимость -->
+    <div class="game-card">
+      <span class="g-badge gold">ПАССИВНЫЙ ДОХОД</span>
+      <div class="g-title">🖥️ Майнинг-Риг & Бизнес-Империя</div>
+      <div class="g-desc">Каждая покупка навсегда увеличивает твой доход золота в секунду!</div>
+      <div class="grid-2">
+        <button class="g-btn" onclick="buyMiner('gpu')">📟 RTX 5090 (+4/с)<br><small>120 🪙</small></button>
+        <button class="g-btn purple" onclick="buyMiner('asic')">⚡ Квантовый Риг (+15/с)<br><small>400 🪙</small></button>
+        <button class="g-btn cyan" onclick="buyMiner('cafe')">🏢 Кибер-Клуб (+35/с)<br><small>850 🪙</small></button>
+        <button class="g-btn green" onclick="buyMiner('studio')">🚀 Гейм-Студия (+100/с)<br><small>2000 🪙</small></button>
+      </div>
+    </div>
+
+    <!-- #72. Кибер-Теплица (Ферма 4 грядки) -->
+    <div class="game-card">
+      <span class="g-badge">АГРО-ФЕРМА</span>
+      <div class="g-title">🌱 Кибер-Теплица Звездных Фруктов</div>
+      <div class="g-desc">Нажми на грядку, чтобы посадить семена, подожди 5 секунд и собери урожай!</div>
+      <div class="grid-4" id="farm-grid"></div>
+    </div>
+
+    <!-- #70, #75, #81, #83. Стейкинг, DEX-Обменник, Копилка и Магазин Ключей -->
+    <div class="game-card">
+      <span class="g-badge gold">БАНК & СЕЙФ КЛЮЧЕЙ</span>
+      <div class="g-title">🏦 Обменник Валют, Копилка и Покупка Ключей</div>
+      <div class="grid-2">
+        <button class="g-btn ghost" onclick="swapGoldToGems()">🔄 200 🪙 ➔ 25 💎</button>
+        <button class="g-btn ghost" onclick="breakPiggy()">🐷 Разбить Копилку (<span id="piggy-val">15</span> 💎)</button>
+        <button class="g-btn" onclick="buyGiftKey()">🔑 Купить VIP-Ключ (100 💎)</button>
+        <button class="g-btn purple" onclick="buyVipStatus()">👑 Статус Магната (300 💎)</button>
+      </div>
+      <div class="out-box" id="vault-keys-out">Купленные ключи появятся здесь.</div>
+    </div>
+
+  </section>
+
+  <!-- ================= ВКЛАДКА 5: ⚡ КВЕСТЫ, КЛАНЫ И СОЦИАЛКА (#84-#95) ================= -->
+  <section class="view-section" id="sec-quests">
+
+    <!-- #86. Календарь наград 7 дней -->
+    <div class="game-card">
+      <span class="g-badge">DAILY STREAK</span>
+      <div class="g-title">📅 Ежедневный Бонус + Battle Pass</div>
+      <div class="grid-2">
+        <button class="g-btn green" onclick="claimDailyReward()">🎁 День <span id="streak-num">1</span> (+50 💎)</button>
+        <button class="g-btn purple" onclick="claimBattlePass()">🎖️ Награда Сезона</button>
+      </div>
+    </div>
+
+    <!-- #84. Официальный Шеринг Telegram с Anti-Cheat таймером 8 сек -->
+    <div class="game-card">
+      <span class="g-badge gold">ANTI-CHEAT РЕФЕРАЛ</span>
+      <div class="g-title">👥 Отправить другу в Telegram (+100 💎)</div>
+      <div class="g-desc">
+        Откроется официальное меню Telegram «Выбрать получателя». 
+        <b>Защита:</b> нужно реально отправить сообщение (находиться в окне выбора не менее 8 секунд)!
+      </div>
+      <button class="g-btn cyan" onclick="startOfficialShare()">📤 Выбрать чат в Telegram (+100 💎)</button>
+      <div class="out-box" id="share-status-box">Статус: Готово к отправке</div>
+    </div>
+
+    <!-- #85. Проверка тега Dada_Games в @username -->
+    <div class="game-card">
+      <span class="g-badge pink">VIP ЗАДАНИЕ</span>
+      <div class="g-title">🏷️ Приставка Dada_Games в @username (+250 💎)</div>
+      <div class="g-desc">Добавь <b>Dada_Games</b> или <b>Dadarba</b> в свой @username Telegram и нажми кнопку проверки:</div>
+      <button class="g-btn green" id="btn-check-tag" onclick="verifyUsernameTag()">✅ Проверить @username (+250 💎)</button>
+      <div class="out-box" id="tag-status-box">Ожидание проверки...</div>
+    </div>
+
+    <!-- #90, #91, #93. Кланы, Топ Лидеров и Подарочные Чеки -->
+    <div class="game-card">
+      <span class="g-badge">КЛАНЫ & ЧЕКИ ДРУЗЬЯМ</span>
+      <div class="g-title">🛡️ Вступить в Орден & Создать Чек</div>
+      <div class="grid-3" style="margin-bottom:8px;">
+        <button class="g-btn ghost" onclick="joinClan('Кибер-Самураи')">⚔️ Самураи</button>
+        <button class="g-btn ghost" onclick="joinClan('Хакеры Теней')">💻 Хакеры</button>
+        <button class="g-btn ghost" onclick="joinClan('Звёздный Легион')">🌟 Легион</button>
+      </div>
+      <button class="g-btn" onclick="createGiftCheck()">🧧 Выписать подарочный чек на 50 🪙 другу</button>
+      <div class="out-box" id="clan-out">Клан не выбран. Вступи для бонуса +20 💎!</div>
+    </div>
+
+  </section>
+
+  <!-- ================= ВКЛАДКА 6: 🤖 КИБЕР-ЛАБ & AI СТУДИЯ (#96-#105) ================= -->
+  <section class="view-section" id="sec-ai">
+
+    <!-- #96, #97, #99. Генераторы AI Промптов, Shorts-сценариев и Связок -->
+    <div class="game-card">
+      <span class="g-badge">AI CREATOR STUDIO</span>
+      <div class="g-title">🤖 Генератор Схем, Промптов и Сценариев Shorts</div>
+      <div class="grid-3">
+        <button class="g-btn cyan" onclick="genLabContent('schema')">💸 AI Связка</button>
+        <button class="g-btn purple" onclick="genLabContent('prompt')">🧠 Промпт</button>
+        <button class="g-btn pink" onclick="genLabContent('shorts')">🎬 Сценарий</button>
+      </div>
+      <div class="out-box" id="ai-lab-out">Выбери генератор выше!</div>
+    </div>
+
+    <!-- #98, #101, #102. Калькулятор ТГ-Канала, Шифратор и Пароли -->
+    <div class="game-card">
+      <span class="g-badge gold">КИБЕР-УТИЛИТЫ</span>
+      <div class="g-title">🔐 Шифратор, Генератор Паролей и Калькулятор ТГ</div>
+      <input type="text" id="cipher-in" placeholder="Текст для шифровки или бюджет рекламы (₽)" value="DadaGames V2">
+      <div class="grid-3">
+        <button class="g-btn ghost" onclick="cipherText()">🕵️ В Матрицу</button>
+        <button class="g-btn ghost" onclick="genPassword()">🔑 Топ Пароль</button>
+        <button class="g-btn ghost" onclick="calcTgRoi()">📈 Доход ТГ</button>
+      </div>
+      <div class="out-box" id="cyber-util-out">Результат утилиты появится здесь.</div>
+    </div>
+
+    <!-- #14, #15, #105. Сохранение и Отправка рекорда в Telegram Бота -->
+    <div class="game-card">
+      <span class="g-badge pink">СИНХРОНИЗАЦИЯ С БОТОМ</span>
+      <div class="g-title">🚀 Отправить Рекорд в Чат Бота & Бекап</div>
+      <div class="g-desc">Отправь свою карточку прогресса напрямую боту или скопируй код сохранения.</div>
+      <div class="grid-2">
+        <button class="g-btn green" onclick="sendStatsToBot()">📤 Отправить в Бота</button>
+        <button class="g-btn ghost" onclick="exportSaveCode()">💾 Код Бекапа</button>
+      </div>
+      <div class="out-box" id="sync-out">Нажми для синхронизации данных.</div>
+    </div>
+
+  </section>
+
+  <!-- НИЖНИЙ ИГРОВОЙ ДОК НА 6 ВКЛАДОК -->
+  <nav class="bottom-dock">
+    <button class="dock-btn active" onclick="switchSec('arena', 0)">
+      <span class="d-ico">⚔️</span><span>Арена</span>
+    </button>
+    <button class="dock-btn" onclick="switchSec('arcade', 1)">
+      <span class="d-ico">🕹️</span><span>Игры</span>
+    </button>
+    <button class="dock-btn" onclick="switchSec('gaming', 2)">
+      <span class="d-ico">🎮</span><span>Гейминг</span>
+    </button>
+    <button class="dock-btn" onclick="switchSec('empire', 3)">
+      <span class="d-ico">🏙️</span><span>Империя</span>
+    </button>
+    <button class="dock-btn" onclick="switchSec('quests', 4)">
+      <span class="d-ico">⚡</span><span>Квесты</span>
+    </button>
+    <button class="dock-btn" onclick="switchSec('ai', 5)">
+      <span class="d-ico">🤖</span><span>AI Лаб</span>
+    </button>
   </nav>
-
-  <!-- ================= ВКЛАДКА 1: КВЕСТЫ И БОНУСЫ ================= -->
-  <section class="tab-view active" id="tab-tasks">
-
-    <!-- 1. ЕЖЕДНЕВНЫЙ СТРИК -->
-    <div class="card">
-      <span class="badge b-green">РЕЖИМ АКТИВНОСТИ</span>
-      <div class="c-title">Календарь наград 7 дней</div>
-      <div class="c-desc">Заходи каждый день без пропусков. Награда растет ежедневно до +100 💎!</div>
-      <div class="streak-grid" id="streak-grid">
-        <div class="streak-day" id="sd-1">Д1<br>+10</div>
-        <div class="streak-day" id="sd-2">Д2<br>+20</div>
-        <div class="streak-day" id="sd-3">Д3<br>+30</div>
-        <div class="streak-day" id="sd-4">Д4<br>+40</div>
-        <div class="streak-day" id="sd-5">Д5<br>+50</div>
-        <div class="streak-day" id="sd-6">Д6<br>+70</div>
-        <div class="streak-day" id="sd-7">Д7<br>+100</div>
-      </div>
-      <button class="btn btn-green" id="btn-streak" onclick="claimDailyStreak()">Забрать бонус дня</button>
-    </div>
-
-    <!-- 2. ANTI-CHEAT ШЕРИНГ -->
-    <div class="card">
-      <span class="badge b-cyan">ANTI-CHEAT ВЕРИФИКАЦИЯ</span>
-      <div class="c-title">Официальный инвайт другу (+75 💎)</div>
-      <div class="c-desc">
-        Откройте меню выбора диалога в Telegram, выберите получателя и отправьте сообщение. 
-        <b>Защита:</b> если вернуться мгновенно без отправки — награда аннулируется!
-      </div>
-      <button class="btn" id="btn-share" onclick="launchAntiCheatShare()">
-        👥 Выбрать чат Telegram (+75 💎)
-      </button>
-      <div id="share-warn" style="font-size: 11px; margin-top: 6px; text-align: center; color: var(--muted);"></div>
-    </div>
-
-    <!-- 3. НАГРАДА ЗА @USERNAME -->
-    <div class="card">
-      <span class="badge b-gold">БРЕНДИНГ</span>
-      <div class="c-title">Тег Dada_Games в @username (+250 💎)</div>
-      <div class="c-desc">
-        Добавьте слово <b>Dada_Games</b> или <b>Dadarba</b> в ваш @username профиля Telegram и заберите грант.
-      </div>
-      <button class="btn btn-green" id="btn-tag" onclick="checkUsernameTag()">Проверить никнейм (+250 💎)</button>
-      <div id="tag-out" style="font-size: 11px; margin-top: 6px; text-align: center; color: var(--muted);"></div>
-    </div>
-
-    <!-- 4. MYSTERY BOX -->
-    <div class="card">
-      <span class="badge b-purple">ЛУТБОКС</span>
-      <div class="c-title">Таинственный кейс Nexus</div>
-      <div class="c-desc">Испытай удачу. Открытие стоит <b>30 💎</b>, шанс выиграть от 10 до 300 💎!</div>
-      <button class="btn" onclick="openMysteryBox()">🎁 Открыть кейс (-30 💎)</button>
-      <div class="res-box" id="box-res"></div>
-    </div>
-
-  </section>
-
-  <!-- ================= ВКЛАДКА 2: ГЕЙМИНГ ЗОНА ================= -->
-  <section class="tab-view" id="tab-gaming">
-
-    <!-- 5. КЛИКЕР С КОМБО -->
-    <div class="card" style="text-align: center;">
-      <span class="badge b-purple">АРКАДА</span>
-      <div class="c-title">Энерго-Ядро Stars</div>
-      <div class="c-desc">Кликай быстро, чтобы поднять комбо-множитель! Набей 25 тапов.</div>
-      <div class="tap-circle" onclick="clickEnergyCore()">👾</div>
-      <div style="font-size: 12px; font-weight: 700; color: var(--cyan); margin-top: 6px;">
-        Прогресс: <span id="tap-progress">0</span> / 25 | Множитель: <span id="tap-combo">x1</span>
-      </div>
-    </div>
-
-    <!-- 6. МЕТА-ТИРЛИСТ BRAWL STARS -->
-    <div class="card">
-      <span class="badge b-cyan">КИБЕРСПОРТ 2026</span>
-      <div class="c-title">Brawl Stars: Мета и Пики</div>
-      <div class="c-desc">Выбери режим, чтобы узнать сильнейших бравлеров по статистике побед:</div>
-      <select id="brawl-mode" onchange="showBrawlMeta()">
-        <option value="gem">💎 Захват кристаллов</option>
-        <option value="brawlball">⚽ Броулбол</option>
-        <option value="heist">💰 Ограбление</option>
-        <option value="solo">💀 Одиночное ШД</option>
-      </select>
-      <div class="res-box" id="brawl-meta-box" style="display: block;">Топ: Отис, Лу, Сту (Винрейт 64%)</div>
-    </div>
-
-    <!-- 7. БАЗА ROBLOX ID & MUSIC -->
-    <div class="card">
-      <span class="badge b-gold">ROBLOX VAULT</span>
-      <div class="c-title">Коды звуков и скинов Roblox</div>
-      <div class="c-desc">Генерация эксклюзивных рабочих ID-кодов для бумбоксов и кастомизации:</div>
-      <button class="btn btn-sub" onclick="getRobloxCode()">🔍 Сгенерировать рабочий ID</button>
-      <div class="res-box" id="roblox-res"></div>
-    </div>
-
-    <!-- 8. МАГАЗИН ПРОМОКОДОВ -->
-    <div class="card">
-      <span class="badge b-green">МАРКЕТПЛЕЙС</span>
-      <div class="c-title">VIP Ключ Активации</div>
-      <div class="c-desc">Обменяй <b>100 💎</b> на премиальный ключ доступа к закрытому каналу раздач.</div>
-      <button class="btn btn-green" onclick="buyVipKey()">💳 Приобрести ключ (-100 💎)</button>
-      <div class="res-box" id="key-res"></div>
-    </div>
-
-    <!-- 9. КИБЕР-ГЕНЕРАТОР НИКОВ -->
-    <div class="card">
-      <span class="badge b-purple">ПРОФИЛЬ</span>
-      <div class="c-title">Киберспортивный генератор ников</div>
-      <div class="c-desc">Стильные никнеймы со спецсимволами для стендоффа, бравла и роблокса:</div>
-      <button class="btn btn-sub" onclick="genGamerNick()">⚡ Создать крутой ник</button>
-      <div class="res-box" id="nick-res"></div>
-    </div>
-
-  </section>
-
-  <!-- ================= ВКЛАДКА 3: AI СТУДИЯ ================= -->
-  <section class="tab-view" id="tab-ai">
-
-    <!-- 10. AI ПРОМПТ ИНЖЕНЕР -->
-    <div class="card">
-      <span class="badge b-cyan">PROMPTING</span>
-      <div class="c-title">Готовые AI Промпты для монетизации</div>
-      <div class="c-desc">Промпты для ChatGPT и Midjourney, которые используют дизайнеры и маркетологи:</div>
-      <select id="ai-cat">
-        <option value="copy">📝 Продающие тексты для Telegram</option>
-        <option value="mid">🎨 Фотореалистичные арты Midjourney</option>
-        <option value="code">💻 Генерация скриптов и Telegram-ботов</option>
-      </select>
-      <button class="btn" onclick="genAiPrompt()">✨ Извлечь промпт</button>
-      <div class="res-box" id="prompt-res"></div>
-    </div>
-
-    <!-- 11. КАЛЬКУЛЯТОР ДОХОДНОСТИ СВЯЗКИ -->
-    <div class="card">
-      <span class="badge b-gold">ФИНАНСЫ</span>
-      <div class="c-title">AI Калькулятор Окупаемости (ROI)</div>
-      <div class="c-desc">Рассчитай прогнозируемый профит связки по привлечению трафика:</div>
-      <input type="number" id="calc-budget" placeholder="Бюджет на рекламу (руб)" value="1000">
-      <button class="btn btn-sub" onclick="calcRoi()">📊 Рассчитать прогноз</button>
-      <div class="res-box" id="calc-res"></div>
-    </div>
-
-    <!-- 12. ТЕСТ НА ПРО-ГЕЙМЕРА / AI ЭКСПЕРТА -->
-    <div class="card">
-      <span class="badge b-purple">КВИЗ</span>
-      <div class="c-title">Викторина Nexus (+40 💎)</div>
-      <div class="c-desc" id="quiz-question">Вопрос: Какая нейросеть лучше всего пишет код на Node.js?</div>
-      <div style="display: flex; gap: 8px;">
-        <button class="btn btn-sub" onclick="answerQuiz(true)">Claude 3.7 / GPT-4o</button>
-        <button class="btn btn-sub" onclick="answerQuiz(false)">Sora AI</button>
-      </div>
-      <div class="res-box" id="quiz-res"></div>
-    </div>
-
-  </section>
 
   <script>
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
 
-    const BOT_USER = 'DadaGames_bot';
+    const BOT_USERNAME = 'DadaGames_bot';
 
-    // Базовое состояние
-    let gems = parseInt(localStorage.getItem('nx_gems') || '50');
-    let streakDay = parseInt(localStorage.getItem('nx_streak_day') || '0');
-    let lastStreakTime = parseInt(localStorage.getItem('nx_last_streak') || '0');
-    let hasTagClaimed = localStorage.getItem('nx_tag_claimed') === 'true';
-    let quizDone = localStorage.getItem('nx_quiz_done') === 'true';
+    // --- ГЛОБАЛЬНОЕ СОСТОЯНИЕ RELEASE V2 ---
+    let S = JSON.parse(localStorage.getItem('dada_v2_save') || 'null') || {
+      gems: 100,
+      gold: 250,
+      trophies: 0,
+      xp: 0,
+      lvl: 1,
+      energy: 100,
+      dmg: 5,
+      idleGold: 0,
+      wpnCost: 100,
+      mercCost: 150,
+      bossIdx: 0,
+      bossHp: 250,
+      bossMaxHp: 250,
+      towerFloor: 1,
+      rebirths: 1,
+      tokensOwned: 0,
+      piggy: 15,
+      streak: 1,
+      lastDaily: 0,
+      tagClaimed: false,
+      vip: false,
+      clan: '',
+      themeIdx: 0,
+      sound: true,
+      usedPromos: [],
+      keys: []
+    };
 
-    // Рендер кошелька и пользователя
-    const uAvatar = document.getElementById('u-avatar');
-    const uName = document.getElementById('u-name');
-    const uTag = document.getElementById('u-tag');
-    const uBal = document.getElementById('u-bal');
-
-    function syncUI() {
-      uBal.textContent = gems;
-      localStorage.setItem('nx_gems', gems.toString());
-      renderStreak();
+    function save() {
+      localStorage.setItem('dada_v2_save', JSON.stringify(S));
+      updateHUD();
     }
 
+    // --- #3. WEB AUDIO API СИНТЕЗАТОР ЗВУКОВ ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSfx(freq = 440, type = 'sine', dur = 0.08) {
+      if (!S.sound) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + dur);
+      } catch (e) {}
+    }
+
+    function toggleSound() {
+      S.sound = !S.sound;
+      document.getElementById('btn-sound').textContent = S.sound ? '🔊' : '🔇';
+      save();
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.display = 'block';
+      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      playSfx(660, 'triangle', 0.15);
+      setTimeout(() => { t.style.display = 'none'; }, 2200);
+    }
+
+    // --- #4. СМЕНА ИГРОВЫХ ТЕМ ---
+    const themes = ['', 'theme-brawl', 'theme-mine', 'theme-roblox', 'theme-matrix'];
+    function cycleTheme() {
+      S.themeIdx = (S.themeIdx + 1) % themes.length;
+      document.body.className = themes[S.themeIdx];
+      showToast('🎨 Тема оформления изменена!');
+      save();
+    }
+    document.body.className = themes[S.themeIdx] || '';
+
+    // --- #10. СИСТЕМА ПРОМОКОДОВ ---
+    function openPromoModal() {
+      const code = prompt('Введите секретный промокод (например: RELEASEV2, DADARBA, BRAWL2026, ROBUX777):');
+      if (!code) return;
+      const clean = code.trim().toUpperCase();
+      if (S.usedPromos.includes(clean)) {
+        return alert('❌ Вы уже активировали этот промокод!');
+      }
+      const promos = {
+        'RELEASEV2': { gems: 200, gold: 500 },
+        'DADARBA': { gems: 300, gold: 300 },
+        'BRAWL2026': { gems: 150, gold: 200 },
+        'ROBUX777': { gems: 177, gold: 777 },
+        'GEMS1000': { gems: 250, gold: 100 }
+      };
+      if (promos[clean]) {
+        S.gems += promos[clean].gems;
+        S.gold += promos[clean].gold;
+        S.usedPromos.push(clean);
+        addXp(50);
+        save();
+        showToast(`🎉 Код ${clean}: +${promos[clean].gems} 💎 и +${promos[clean].gold} 🪙!`);
+      } else {
+        alert('❌ Неверный промокод!');
+      }
+    }
+
+    // --- #95. ПАСХАЛКА РАЗРАБОТЧИКА (7 КЛИКОВ ПО АВАТАРКЕ) ---
+    let avatarClicks = 0;
+    function triggerEasterEgg() {
+      avatarClicks++;
+      if (avatarClicks === 7) {
+        S.gems += 500;
+        save();
+        showToast('🕵️ Секрет Разработчика открыт! +500 💎');
+      }
+    }
+
+    // --- ОБНОВЛЕНИЕ HUD И РАНГОВ (#1, #5) ---
     const tUser = tg.initDataUnsafe?.user;
     if (tUser) {
-      uName.textContent = tUser.first_name || 'Player';
-      uTag.textContent = tUser.username ? `@${tUser.username}` : 'Без никнейма';
-      uAvatar.textContent = (tUser.first_name ? tUser.first_name[0] : 'U').toUpperCase();
-    } else {
-      uName.textContent = 'Dadarba Admin';
-      uTag.textContent = '@Dadarba_Dada_Games';
-      uAvatar.textContent = 'D';
+      document.getElementById('hud-name').textContent = tUser.first_name || 'Игрок';
+      document.getElementById('hud-avatar').childNodes[0].nodeValue = (tUser.first_name ? tUser.first_name[0] : 'D').toUpperCase();
     }
-    syncUI();
 
-    // Навигация по табам
-    function setTab(name) {
+    function addXp(amount) {
+      S.xp += amount;
+      const needed = S.lvl * 100;
+      if (S.xp >= needed) {
+        S.xp -= needed;
+        S.lvl++;
+        S.gems += 25;
+        showToast(`🆙 НОВЫЙ УРОВЕНЬ ${S.lvl}! Бонус +25 💎`);
+      }
+    }
+
+    function getRankName(tr) {
+      if (tr < 50) return '🥉 Бронзовая Лига';
+      if (tr < 150) return '🥈 Серебряная Лига';
+      if (tr < 300) return '🥇 Золотая Лига';
+      if (tr < 600) return '💎 Алмазный Титан';
+      if (tr < 1000) return '🔮 Мифический Чемпион';
+      return '👑 Кибер-Бог Арены';
+    }
+
+    function updateHUD() {
+      document.getElementById('val-gems').textContent = Math.floor(S.gems);
+      document.getElementById('val-gold').textContent = Math.floor(S.gold);
+      document.getElementById('val-trophies').textContent = S.trophies;
+      document.getElementById('val-idle').textContent = `+${S.idleGold * S.rebirths}/с`;
+      document.getElementById('hud-lvl').textContent = `LVL ${S.lvl}`;
+      document.getElementById('hud-rank').textContent = `${getRankName(S.trophies)} (${S.trophies} 🏆)`;
+      document.getElementById('hud-vip').style.display = S.vip ? 'inline' : 'none';
+
+      const needXp = S.lvl * 100;
+      document.getElementById('xp-bar').style.width = `${Math.min(100, (S.xp / needXp) * 100)}%`;
+      document.getElementById('xp-txt').textContent = `XP: ${S.xp} / ${needXp}`;
+
+      document.getElementById('en-bar').style.width = `${S.energy}%`;
+      document.getElementById('en-txt').textContent = `⚡ ${S.energy} / 100`;
+
+      document.getElementById('stat-dmg').textContent = S.dmg * S.rebirths;
+      document.getElementById('cost-wpn').textContent = `${S.wpnCost} 🪙`;
+      document.getElementById('cost-merc').textContent = `${S.mercCost} 🪙`;
+      document.getElementById('tower-fl').textContent = S.towerFloor;
+      document.getElementById('rebirth-mult').textContent = S.rebirths;
+      document.getElementById('piggy-val').textContent = S.piggy;
+      document.getElementById('streak-num').textContent = S.streak;
+    }
+
+    function switchSec(id, idx) {
+      playSfx(520, 'sine', 0.05);
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
-      
-      const idx = name === 'tasks' ? 0 : (name === 'gaming' ? 1 : 2);
-      document.querySelectorAll('.tab-btn')[idx].classList.add('active');
-      document.getElementById(`tab-${name}`).classList.add('active');
+      document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(`sec-${id}`).classList.add('active');
+      document.querySelectorAll('.dock-btn')[idx].classList.add('active');
     }
 
-    // 1. ЕЖЕДНЕВНЫЙ СТРИК
-    const streakRewards = [10, 20, 30, 40, 50, 70, 100];
-    function renderStreak() {
-      for (let i = 1; i <= 7; i++) {
-        const el = document.getElementById(`sd-${i}`);
-        if (i <= streakDay) el.classList.add('claimed');
-        else el.classList.remove('claimed');
+    // --- ПАССИВНЫЙ ДОХОД, РЕГЕН ЭНЕРГИИ И ЖИВАЯ БИРЖА (#6, #8, #69) ---
+    let currentDadaPrice = 100;
+    setInterval(() => {
+      if (S.idleGold > 0) {
+        S.gold += S.idleGold * S.rebirths;
+        hitBoss(true); // Авто-урон от наемников
+      }
+      if (S.energy < 100) S.energy = Math.min(100, S.energy + 2);
+
+      // Живой курс токена $DADA
+      const delta = Math.floor(Math.random() * 25) - 11;
+      currentDadaPrice = Math.max(30, Math.min(350, currentDadaPrice + delta));
+      document.getElementById('dada-price').textContent = currentDadaPrice;
+      document.getElementById('dada-owned').textContent = S.tokensOwned;
+      const tr = document.getElementById('market-trend');
+      tr.textContent = delta >= 0 ? `📈 +${delta} 🪙` : `📉 ${delta} 🪙`;
+      tr.style.color = delta >= 0 ? '#06d6a0' : '#f15bb5';
+
+      updateHUD();
+    }, 1500);
+
+    // ================= ЛОГИКА ВКЛАДКИ 1: ⚔️ АРЕНА И БОССЫ =================
+    const bosses = [
+      { name: '🐉 Кибер-Дракон Игнис', ico: '🐉', elem: 'ОГОНЬ' },
+      { name: '🤖 Меха-Титан Кронос', ico: '🤖', elem: 'СТАЛЬ' },
+      { name: '👾 Лорд Пустоты Нексус', ico: '👾', elem: 'ТЬМА' },
+      { name: '👹 Архидемон Матрицы', ico: '👹', elem: 'ХАОС' }
+    ];
+
+    function renderBoss() {
+      const b = bosses[S.bossIdx % bosses.length];
+      document.getElementById('boss-name').textContent = b.name;
+      document.getElementById('boss-ico').textContent = b.ico;
+      document.getElementById('boss-stage-lbl').textContent = `БОСС #${S.bossIdx + 1} • СТИХИЯ: ${b.elem}`;
+      const pct = Math.max(0, (S.bossHp / S.bossMaxHp) * 100);
+      document.getElementById('boss-hp-fill').style.width = `${pct}%`;
+      document.getElementById('boss-hp-txt').textContent = `${Math.max(0, Math.floor(S.bossHp))} / ${S.bossMaxHp} HP`;
+    }
+    renderBoss();
+
+    function hitBoss(isAuto = false) {
+      if (!isAuto) {
+        if (S.energy < 1) return showToast('⚡ Не хватает энергии! Подожди пару секунд.');
+        S.energy--;
+        S.piggy++;
+        playSfx(320, 'square', 0.04);
+        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('rigid');
+      }
+      const isCrit = !isAuto && Math.random() < 0.22;
+      const dmgDealt = (S.dmg * S.rebirths) * (isCrit ? 3 : 1);
+      S.bossHp -= dmgDealt;
+
+      if (!isAuto) {
+        document.getElementById('combat-log').textContent = isCrit
+          ? `💥 КРИТИЧЕСКИЙ УДАР! -${dmgDealt} HP!`
+          : `⚔️ Нанесено -${dmgDealt} HP боссу!`;
+      }
+
+      if (S.bossHp <= 0) {
+        S.bossIdx++;
+        S.bossMaxHp = Math.round(S.bossMaxHp * 1.45);
+        S.bossHp = S.bossMaxHp;
+        const goldReward = 80 * S.bossIdx;
+        S.gold += goldReward;
+        S.gems += 15;
+        S.trophies += 12;
+        addXp(45);
+        showToast(`🏆 Босс повержен! +${goldReward} 🪙, +15 💎, +12 🏆`);
+      }
+      renderBoss();
+      save();
+    }
+
+    function castSkill(type) {
+      if (S.energy < 15) return showToast('⚡ Нужно 15 энергии для скилла!');
+      S.energy -= 15;
+      const mult = type === 'meteor' ? 6 : (type === 'thunder' ? 8 : 5);
+      const skillDmg = S.dmg * S.rebirths * mult;
+      S.bossHp -= skillDmg;
+      document.getElementById('combat-log').textContent = `🔥 Скилл нанес сокрушительные -${skillDmg} HP!`;
+      if (S.bossHp <= 0) hitBoss(true);
+      renderBoss();
+      save();
+    }
+
+    function upgradeWeapon() {
+      if (S.gold < S.wpnCost) return showToast('❌ Недостаточно золота 🪙!');
+      S.gold -= S.wpnCost;
+      S.dmg += 4;
+      S.wpnCost = Math.round(S.wpnCost * 1.5);
+      addXp(25);
+      save();
+      showToast('🗡️ Оружие улучшено! Урон вырос.');
+    }
+
+    function enchantWeapon() {
+      if (S.gems < 40) return showToast('❌ Нужно 40 💎!');
+      S.gems -= 40;
+      const runes = ['🔥 Руна Пламени (+5 ⚔️)', '❄️ Руна Льда (+7 ⚔️)', '⚡ Руна Бури (+10 ⚔️)'];
+      const pick = runes[Math.floor(Math.random() * runes.length)];
+      S.dmg += 7;
+      document.getElementById('hero-gear-out').textContent = `Зачаровано: ${pick}`;
+      save();
+      showToast(`🔮 ${pick}`);
+    }
+
+    function hatchPet() {
+      if (S.gems < 75) return showToast('❌ Нужно 75 💎!');
+      S.gems -= 75;
+      const pets = ['🐺 Кибер-Волк', '🦅 Неоновый Феникс', '🐲 Квантовый Дракончик', '🐱 Робо-Кот'];
+      const p = pets[Math.floor(Math.random() * pets.length)];
+      S.idleGold += 6;
+      S.dmg += 5;
+      document.getElementById('hero-gear-out').textContent = `Ваш питомец: ${p} (+6 🪙/с и +5 ⚔️)`;
+      save();
+      showToast(`🐾 Вылупился ${p}!`);
+    }
+
+    function hireMerc() {
+      if (S.gold < S.mercCost) return showToast('❌ Не хватает золота 🪙!');
+      S.gold -= S.mercCost;
+      S.idleGold += 5;
+      S.mercCost = Math.round(S.mercCost * 1.55);
+      save();
+      showToast('💂 Боец нанят в отряд! Авто-доход увеличен.');
+    }
+
+    function playPvp(zone) {
+      const bots = ['Голова', 'Корпус', 'Ноги'];
+      const block = bots[Math.floor(Math.random() * bots.length)];
+      const out = document.getElementById('pvp-out');
+      if (zone === block) {
+        out.textContent = `🛡️ Соперник заблокировал удар в «${zone}»! Ничья.`;
+      } else {
+        S.trophies += 15;
+        S.gold += 45;
+        addXp(20);
+        out.textContent = `⚔️ Пробитие в «${zone}»! Победа: +15 🏆 и +45 🪙`;
+        showToast('🏆 Победа на PvP Арене! +15 Кубков');
+      }
+      save();
+    }
+
+    function climbTower() {
+      if (S.dmg * S.rebirths < S.towerFloor * 6) {
+        return showToast(`❌ Мало урона для Этажа ${S.towerFloor}! Прокачай меч.`);
+      }
+      const prize = S.towerFloor * 35;
+      S.gold += prize;
+      S.trophies += 10;
+      S.towerFloor++;
+      save();
+      showToast(`🗼 Этаж пройден! +${prize} 🪙 и +10 🏆`);
+    }
+
+    function claimBounty() {
+      S.gold += 80;
+      addXp(15);
+      save();
+      showToast('🎯 Контракт охотника выполнен! +80 🪙');
+    }
+
+    function brewPotion() {
+      if (S.gold < 50) return showToast('❌ Нужно 50 🪙!');
+      S.gold -= 50;
+      const res = ['🧪 Зелье Силы (+3 ⚔️ навсегда)', '⚡ Эликсир Энергии (100% ⚡)', '💎 Философский камень (+40 💎)'];
+      const r = Math.floor(Math.random() * res.length);
+      if (r === 0) S.dmg += 3;
+      if (r === 1) S.energy = 100;
+      if (r === 2) S.gems += 40;
+      document.getElementById('alchemy-out').textContent = `Сварено: ${res[r]}`;
+      save();
+      showToast(res[r]);
+    }
+
+    function doRebirth() {
+      if (S.lvl < 5) return showToast('❌ Для Перерождения нужен минимум 5 Уровень!');
+      S.lvl = 1;
+      S.xp = 0;
+      S.gold = 100;
+      S.rebirths++;
+      save();
+      showToast(`🔥 ПЕРЕРОЖДЕНИЕ! Теперь все доходы и урон x${S.rebirths}!`);
+    }
+
+    // ================= ЛОГИКА ВКЛАДКИ 2: 🕹️ 18 МИНИ-ИГР И АРКАД =================
+    let mineBoard = [];
+    let minePot = 0;
+    let mineActive = false;
+
+    function initMines() {
+      if (S.gold < 30) return showToast('❌ Нужно 30 🪙 для старта!');
+      S.gold -= 30;
+      minePot = 30;
+      mineActive = true;
+      mineBoard = Array(16).fill('gem');
+      for (let i = 0; i < 3; i++) mineBoard[Math.floor(Math.random() * 16)] = 'bomb';
+      renderMines();
+      save();
+    }
+
+    function renderMines() {
+      const g = document.getElementById('mines-grid');
+      g.innerHTML = '';
+      document.getElementById('mine-pot').textContent = minePot;
+      for (let i = 0; i < 16; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'mine-cell';
+        cell.textContent = '❓';
+        cell.onclick = () => clickMineCell(i, cell);
+        g.appendChild(cell);
       }
     }
-    function claimDailyStreak() {
+
+    function clickMineCell(idx, el) {
+      if (!mineActive || el.textContent !== '❓') return;
+      if (mineBoard[idx] === 'bomb') {
+        el.textContent = '💥';
+        el.style.background = '#b5179e';
+        minePot = 0;
+        mineActive = false;
+        document.getElementById('mine-pot').textContent = 0;
+        showToast('💥 БУМ! Вы попали на мину!');
+      } else {
+        el.textContent = '💎';
+        el.style.background = '#048c69';
+        minePot += 20;
+        document.getElementById('mine-pot').textContent = minePot;
+        playSfx(600, 'sine', 0.06);
+      }
+    }
+
+    function cashoutMines() {
+      if (!mineActive || minePot <= 0) return;
+      S.gold += minePot;
+      showToast(`💰 Вы забрали ${minePot} 🪙 из Сапёра!`);
+      minePot = 0;
+      mineActive = false;
+      document.getElementById('mine-pot').textContent = 0;
+      save();
+    }
+    setTimeout(renderMines, 50);
+
+    function spinSlots() {
+      if (S.gold < 20) return showToast('❌ Нужно 20 🪙!');
+      S.gold -= 20;
+      const syms = ['🍒', '💎', '7️⃣', '🔔', '⭐'];
+      const r1 = syms[Math.floor(Math.random() * syms.length)];
+      const r2 = syms[Math.floor(Math.random() * syms.length)];
+      const r3 = syms[Math.floor(Math.random() * syms.length)];
+      document.getElementById('slot-reels').textContent = `${r1} | ${r2} | ${r3}`;
+      if (r1 === r2 && r2 === r3) {
+        S.gold += 250;
+        S.gems += 50;
+        showToast('🎰 ДЖЕКПОТ 777! +250 🪙 и +50 💎!');
+      } else if (r1 === r2 || r2 === r3 || r1 === r3) {
+        S.gold += 45;
+        showToast('🎰 Совпадение 2 символов! +45 🪙');
+      }
+      save();
+    }
+
+    function launchRocket() {
+      if (S.gold < 25) return showToast('❌ Нужно 25 🪙!');
+      S.gold -= 25;
+      const crash = (Math.random() * 4.2 + 0.5).toFixed(2);
+      const out = document.getElementById('casino-out');
+      if (crash >= 2.0) {
+        const win = Math.round(25 * crash);
+        S.gold += win;
+        out.textContent = `🚀 Ракета долетела до x${crash}! Выигрыш: +${win} 🪙`;
+        showToast(`🚀 Успешный полет x${crash}! +${win} 🪙`);
+      } else {
+        out.textContent = `💥 Ракета взорвалась на x${crash}! Попробуй еще раз.`;
+      }
+      save();
+    }
+
+    function setArcadeOut(txt, goldWin = 30, gemWin = 5) {
+      S.gold += goldWin;
+      S.gems += gemWin;
+      addXp(15);
+      document.getElementById('arcade-multi-out').textContent = txt;
+      save();
+      showToast(`🕹️ +${goldWin} 🪙 и +${gemWin} 💎`);
+    }
+
+    function playShellGame() { setArcadeOut('🎩 Вы угадали кубок #2! Внутри лежал алмаз.', 35, 8); }
+    function playSniperBar() { setArcadeOut('🎯 Попадание в яблочко (98% точность)!', 40, 6); }
+    function playCyberRps() { setArcadeOut('✂️ Кибер-Плазма победила Камень бота!', 30, 5); }
+    function playReactionTest() { setArcadeOut(`⚡ Ваша реакция: ${Math.floor(Math.random() * 90 + 165)} мс! Киберспортивный результат!`, 45, 10); }
+    function playHiLo() { setArcadeOut('🃏 Выпал Туз Пик (Старше)! Ставка сыграла.', 35, 5); }
+    function playSafeCrack() { setArcadeOut(`🔐 Сейф взломан! Код был ${Math.floor(100 + Math.random() * 900)}.`, 60, 12); }
+    function playCyberDice() { setArcadeOut('🎲 Вы выбросили 6 + 5 = 11 против 8 у дилера!', 40, 5); }
+    function playCoinStreak() { setArcadeOut('🪙 Выпал Орёл! Ваша серия удвоена.', 35, 7); }
+    function playScratchCard() { setArcadeOut('🎫 Стерто 3 золотых слитка подряд!', 50, 10); }
+    function playCpsTest() { setArcadeOut(`👆 Ваш результат: ${(Math.random() * 4 + 8.5).toFixed(1)} кликов в секунду (CPS)!`, 30, 6); }
+    function playMathBlitz() { setArcadeOut('🧮 17 × 4 = 68! Решено за 1.4 сек.', 35, 8); }
+    function playDungeonQuest() { setArcadeOut('🏰 Вы обошли ловушку гоблинов и открыли мифический сундук!', 55, 15); }
+
+    function spinWheel() {
+      if (S.gems < 30) return showToast('❌ Нужно 30 💎!');
+      S.gems -= 30;
+      const prizes = [15, 35, 50, 100, 200, 500];
+      const p = prizes[Math.floor(Math.random() * prizes.length)];
+      S.gems += p;
+      document.getElementById('wheel-out').textContent = `🎡 Сектор Колеса: +${p} 💎!`;
+      save();
+      showToast(`🎡 Выиграно +${p} 💎!`);
+    }
+
+    function whackBug() {
+      S.gold += 15;
+      addXp(10);
+      document.getElementById('wheel-out').textContent = '🐛 Баг в коде устранен! +15 🪙';
+      save();
+      playSfx(720, 'triangle', 0.08);
+    }
+
+    // ================= ЛОГИКА ВКЛАДКИ 3: 🎮 ГЕЙМЕРСКИЙ ХАБ =================
+    let starrTaps = 0;
+    const rarities = ['РЕДКИЙ', 'СВЕРХРЕДКИЙ', 'ЭПИЧЕСКИЙ', 'МИФИЧЕСКИЙ', '🌟 ЛЕГЕНДАРНЫЙ!'];
+    function tapStarrDrop() {
+      starrTaps++;
+      const box = document.getElementById('starr-box');
+      box.style.transform = `scale(${1 + starrTaps * 0.12}) rotate(${starrTaps * 12}deg)`;
+      playSfx(400 + starrTaps * 110, 'sine', 0.08);
+      if (starrTaps < 4) {
+        document.getElementById('starr-rarity').textContent = `${rarities[starrTaps]} (Тапов: ${starrTaps}/4)`;
+      } else {
+        starrTaps = 0;
+        box.style.transform = 'scale(1)';
+        const gemDrop = Math.floor(Math.random() * 45) + 15;
+        S.gems += gemDrop;
+        S.trophies += 8;
+        document.getElementById('starr-rarity').textContent = `🎉 ВЫПАЛО +${gemDrop} 💎 и +8 🏆! Тапай снова!`;
+        save();
+        showToast(`⭐ Starr Drop: +${gemDrop} 💎!`);
+      }
+    }
+
+    let lastSkinValue = 0;
+    function openSo2Case() {
+      if (S.gold < 40) return showToast('❌ Нужно 40 🪙!');
+      S.gold -= 40;
+      const skins = [
+        { name: '🔪 Karambit "Gold"', val: 350 },
+        { name: '🧤 Gloves "Neuro"', val: 220 },
+        { name: '🔫 AWM "Treasure Hunter"', val: 180 },
+        { name: '🔫 AKR "Dragon"', val: 65 },
+        { name: '🔫 M4 "Samurai"', val: 50 }
+      ];
+      const drop = skins[Math.floor(Math.random() * skins.length)];
+      lastSkinValue = drop.val;
+      document.getElementById('so2-out').textContent = `Выпал: ${drop.name} (Цена: ${drop.val} 🪙)`;
+      save();
+      showToast(`📦 ${drop.name}!`);
+    }
+
+    function sellLastSkin() {
+      if (lastSkinValue <= 0) return showToast('❌ Нет скина для продажи!');
+      S.gold += lastSkinValue;
+      showToast(`💵 Скин продан за +${lastSkinValue} 🪙!`);
+      lastSkinValue = 0;
+      document.getElementById('so2-out').textContent = 'Скин продан. Открой новый кейс!';
+      save();
+    }
+
+    function craftMcItem() {
+      S.gems += 10;
+      document.getElementById('mc-out').textContent = '⛏️ Скрафчена Незеритовая Кирка (Эффективность V)! +10 💎';
+      save();
+    }
+    function getMcSeed() {
+      const seeds = ['-4530634556500121041 (Древний Город на спавне)', '884920193348102 (Особняк в роще сакуры)', '709219481203941 (Остров с 3 кузницами)'];
+      document.getElementById('mc-out').textContent = `🌍 Сид: ${seeds[Math.floor(Math.random() * seeds.length)]}`;
+    }
+    function getMcCommand() {
+      document.getElementById('mc-out').textContent = '/give @p diamond_sword[enchantments={levels:{"sharpness":255}}] 1';
+    }
+
+    function calcRobuxTax() {
+      const v = parseFloat(document.getElementById('rbx-input').value) || 100;
+      const afterTax = Math.floor(v * 0.7);
+      const needToSet = Math.ceil(v / 0.7);
+      document.getElementById('gamer-calc-out').textContent = `При цене ${v} RBX вы получите ${afterTax} RBX. Чтобы получить ровно ${v} RBX, ставьте цену ${needToSet} RBX.`;
+    }
+    function calcBrawlGems() {
+      const g = parseFloat(document.getElementById('rbx-input').value) || 100;
+      document.getElementById('gamer-calc-out').textContent = `${g} Гемов = ~${g * 11} монет или ${(g / 169).toFixed(1)} мифических скинов.`;
+    }
+    function getRobloxCodes() {
+      const codes = ['🎵 Boombox Phonk ID: 1843526173', '🍎 Blox Fruits 2x XP: KITT_RESET / SUB2GAMERROBOT_EXP1', '⚔️ Blade Ball: FREE_SPIN_2026'];
+      document.getElementById('gamer-calc-out').textContent = codes[Math.floor(Math.random() * codes.length)];
+    }
+    function getBrawlCounter() {
+      const c = ['🛡️ Против Эдгара и Кита: Гейл, Вольт, Шелли, Корделиус', '🛡️ Против Фрэнка и Танков: Колетт, Лу, Грифф', '🛡️ Против Снайперов: Мортис, Мелоди, Леон'];
+      document.getElementById('gamer-calc-out').textContent = c[Math.floor(Math.random() * c.length)];
+    }
+
+    function generateStyledNick() {
+      const raw = document.getElementById('nick-input').value || 'Dadarba';
+      const styles = [
+        `乂${raw}_God乂`, `『${raw}』⚡`, `👑 𝓥𝓘𝓟_${raw}`, `☠️ ${raw}_Sniper`, `【${raw}_2026】`
+      ];
+      document.getElementById('nick-out').textContent = styles.join(' • ');
+    }
+    function genCrosshair() {
+      document.getElementById('nick-out').textContent = '➕ Прицел Киберспорт: Размер Точки 0 | Линии: Длина 5, Толщина 2, Зазор -2 | Цвет: #00FFCC';
+    }
+    function genChallenge() {
+      const ch = ['🔥 Челлендж: Выиграй катку в ШД без атаки до топ-3!', '🔫 Челлендж: Сыграй раунд в Standoff 2 только с Deagle!', '⛏️ Челлендж: Добудь алмаз в Minecraft за 4 минуты!'];
+      document.getElementById('nick-out').textContent = ch[Math.floor(Math.random() * ch.length)];
+    }
+
+    // ================= ЛОГИКА ВКЛАДКИ 4: 🏙️ ИМПЕРИЯ, ФЕРМА И БИРЖА =================
+    function buyToken() {
+      if (S.gold < currentDadaPrice) return showToast('❌ Не хватает золота 🪙!');
+      S.gold -= currentDadaPrice;
+      S.tokensOwned++;
+      save();
+      showToast(`🟢 Куплен 1 $DADA за ${currentDadaPrice} 🪙`);
+    }
+    function sellToken() {
+      if (S.tokensOwned <= 0) return showToast('❌ У вас нет токенов $DADA!');
+      S.tokensOwned--;
+      S.gold += currentDadaPrice;
+      save();
+      showToast(`🔴 Продано за +${currentDadaPrice} 🪙!`);
+    }
+
+    function buyMiner(type) {
+      const map = {
+        gpu: { cost: 120, inc: 4 },
+        asic: { cost: 400, inc: 15 },
+        cafe: { cost: 850, inc: 35 },
+        studio: { cost: 2000, inc: 100 }
+      };
+      const item = map[type];
+      if (S.gold < item.cost) return showToast(`❌ Нужно ${item.cost} 🪙!`);
+      S.gold -= item.cost;
+      S.idleGold += item.inc;
+      addXp(30);
+      save();
+      showToast(`⚙️ Доход увеличен на +${item.inc} 🪙/сек!`);
+    }
+
+    // #72. Теплица 4 грядки
+    let plots = ['empty', 'empty', 'empty', 'empty'];
+    function renderFarm() {
+      const fg = document.getElementById('farm-grid');
+      fg.innerHTML = '';
+      plots.forEach((st, idx) => {
+        const div = document.createElement('div');
+        div.className = 'mine-cell';
+        div.textContent = st === 'empty' ? '🟫' : (st === 'growing' ? '🌱' : '🍍');
+        div.onclick = () => clickPlot(idx);
+        fg.appendChild(div);
+      });
+    }
+    function clickPlot(i) {
+      if (plots[i] === 'empty') {
+        plots[i] = 'growing';
+        renderFarm();
+        setTimeout(() => { plots[i] = 'ready'; renderFarm(); }, 4000);
+      } else if (plots[i] === 'ready') {
+        plots[i] = 'empty';
+        S.gold += 60;
+        S.gems += 8;
+        renderFarm();
+        save();
+        showToast('🍍 Урожай собран! +60 🪙 и +8 💎');
+      }
+    }
+    setTimeout(renderFarm, 60);
+
+    function swapGoldToGems() {
+      if (S.gold < 200) return showToast('❌ Нужно 200 🪙!');
+      S.gold -= 200;
+      S.gems += 25;
+      save();
+      showToast('🔄 Обмен выполнен: +25 💎');
+    }
+    function breakPiggy() {
+      if (S.piggy < 10) return showToast('🐷 Накопи хотя бы 10 💎 кликами по боссу!');
+      const gain = S.piggy;
+      S.gems += gain;
+      S.piggy = 0;
+      save();
+      showToast(`🐷 Копилка разбита! +${gain} 💎`);
+    }
+    function buyGiftKey() {
+      if (S.gems < 100) return showToast('❌ Нужно 100 💎!');
+      S.gems -= 100;
+      const k = `DADA-V2-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+      S.keys.push(k);
+      document.getElementById('vault-keys-out').innerHTML = `Ваши ключи: <b>${S.keys.join(', ')}</b>`;
+      save();
+      showToast(`🔑 Ключ ${k} сохранен в сейф!`);
+    }
+    function buyVipStatus() {
+      if (S.vip) return showToast('👑 У вас уже активен статус Магната!');
+      if (S.gems < 300) return showToast('❌ Нужно 300 💎!');
+      S.gems -= 300;
+      S.vip = true;
+      S.rebirths++;
+      save();
+      showToast('👑 VIP-Статус Магната активирован! Множитель увеличен!');
+    }
+
+    // ================= ЛОГИКА ВКЛАДКИ 5: ⚡ КВЕСТЫ И ANTI-CHEAT =================
+    function claimDailyReward() {
       const now = Date.now();
-      const oneDay = 24 * 60 * 60 * 1000;
-      
-      if (now - lastStreakTime < oneDay) {
-        tg.showAlert('⏳ Вы уже забирали сегодняшнюю награду! Возвращайтесь завтра.');
-        return;
+      if (now - S.lastDaily < 3600 * 1000 * 12) {
+        return showToast('⏳ Бонус уже получен сегодня!');
       }
-      
-      if (now - lastStreakTime > oneDay * 2) {
-        streakDay = 0; // Сброс при пропуске
-      }
-
-      streakDay = (streakDay % 7) + 1;
-      const prize = streakRewards[streakDay - 1];
-      gems += prize;
-      lastStreakTime = now;
-
-      localStorage.setItem('nx_streak_day', streakDay.toString());
-      localStorage.setItem('nx_last_streak', lastStreakTime.toString());
-      syncUI();
-
-      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      tg.showAlert(`🎉 День ${streakDay} пройден! Получено +${prize} 💎`);
+      S.lastDaily = now;
+      const reward = S.streak * 50;
+      S.gems += reward;
+      S.streak = (S.streak % 7) + 1;
+      save();
+      showToast(`📅 Ежедневная награда: +${reward} 💎!`);
     }
 
-    // 2. ANTI-CHEAT СИСТЕМА ШЕРИНГА (проверка времени отсутствия)
-    let shareStartTime = 0;
-    let isSharingActive = false;
+    function claimBattlePass() {
+      if (S.lvl < 2) return showToast('🎖️ Достигни 2 уровня для награды Battle Pass!');
+      S.gems += 40;
+      S.gold += 150;
+      save();
+      showToast('🎖️ Battle Pass: +40 💎 и +150 🪙!');
+    }
 
-    function launchAntiCheatShare() {
-      const lastShare = parseInt(localStorage.getItem('nx_last_share') || '0');
-      const now = Date.now();
+    // #84. Официальный Шеринг с проверкой 8 секунд
+    let shareTimestamp = 0;
+    let waitingShare = false;
 
-      // Кулдаун 60 секунд между попытками
-      if (now - lastShare < 60000) {
-        const left = Math.ceil((60000 - (now - lastShare)) / 1000);
-        tg.showAlert(`⏳ Подождите ${left} сек. перед следующим инвайтом!`);
-        return;
-      }
-
-      shareStartTime = Date.now();
-      isSharingActive = true;
-
-      const txt = encodeURIComponent("Забирай бесплатные гемы 💎, Robux ключи и AI связки в Nexus OS!");
-      const url = encodeURIComponent(`https://t.me/${BOT_USER}`);
-      
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+    function startOfficialShare() {
+      shareTimestamp = Date.now();
+      waitingShare = true;
+      const txt = encodeURIComponent('Зацени масштабный Release V2 в DadaGames! 105+ функций, боссы, биржа и промокоды 🔥');
+      const url = encodeURIComponent(`https://t.me/${BOT_USERNAME}`);
+      document.getElementById('share-status-box').textContent = '⏳ Ожидание выбора чата и отправки в Telegram...';
       tg.openTelegramLink(`https://t.me/share/url?url=${url}&text=${txt}`);
-      
-      document.getElementById('share-warn').textContent = 'Ожидание реальной отправки в Telegram...';
     }
 
-    // Проверка при возврате в приложение
-    function verifyShareReturn() {
-      if (!isSharingActive) return;
-      isSharingActive = false;
-
-      const elapsedSeconds = (Date.now() - shareStartTime) / 1000;
-      const warn = document.getElementById('share-warn');
-
-      // Если пользователь вернулся быстрее 8 секунд — он просто закрыл окно
-      if (elapsedSeconds < 8) {
+    function checkShareReturn() {
+      if (!waitingShare) return;
+      waitingShare = false;
+      const diff = (Date.now() - shareTimestamp) / 1000;
+      const box = document.getElementById('share-status-box');
+      if (diff < 8) {
+        box.textContent = '❌ Слишком быстрый возврат (< 8 сек)! Выберите друга и отправьте сообщение.';
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-        warn.textContent = '❌ Слишком быстрый возврат (менее 8 сек)! Сообщение не отправлено.';
-        warn.style.color = '#f87171';
-        tg.showAlert('❌ Вы не отправили сообщение, а просто вернулись назад! Выберите чат и реально нажмите "Отправить".');
       } else {
-        // Успешная отправка
-        gems += 75;
-        localStorage.setItem('nx_last_share', Date.now().toString());
-        syncUI();
-        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-        warn.textContent = '✅ Проверка пройдена! Начислено +75 💎';
-        warn.style.color = '#06d6a0';
-        tg.showAlert('🎉 Спасибо за поддержку! Награда +75 💎 успешно начислена.');
+        S.gems += 100;
+        save();
+        box.textContent = '✅ Отправка подтверждена! Начислено +100 💎';
+        showToast('🎉 Спасибо за репост! +100 💎');
       }
     }
+    window.addEventListener('focus', checkShareReturn);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) checkShareReturn(); });
 
-    window.addEventListener('focus', verifyShareReturn);
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) verifyShareReturn();
-    });
-
-    // 3. НАГРАДА ЗА @USERNAME
-    function checkUsernameTag() {
-      if (hasTagClaimed) {
-        tg.showAlert('Вы уже забирали эту награду!');
-        return;
-      }
-      const raw = (tUser?.username || '').toLowerCase();
-      const out = document.getElementById('tag-out');
-
-      if (raw.includes('dada_games') || raw.includes('dadarba')) {
-        gems += 250;
-        hasTagClaimed = true;
-        localStorage.setItem('nx_tag_claimed', 'true');
-        syncUI();
-        out.textContent = '✅ Тег подтвержден! Получено +250 💎';
-        out.style.color = '#06d6a0';
-        document.getElementById('btn-tag').disabled = true;
-        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+    // #85. Проверка @username на Dada_Games / Dadarba
+    function verifyUsernameTag() {
+      if (S.tagClaimed) return showToast('✅ Вы уже забрали эту награду!');
+      const uname = (tUser?.username || '').toLowerCase();
+      const box = document.getElementById('tag-status-box');
+      if (uname.includes('dada_games') || uname.includes('dadarba')) {
+        S.gems += 250;
+        S.tagClaimed = true;
+        save();
+        box.textContent = `✅ Тег найден в @${tUser.username}! +250 💎 зачислено.`;
+        showToast('🏷️ +250 💎 за брендированный ник!');
       } else {
-        out.textContent = '❌ Тег Dada_Games не найден в вашем никнейме!';
-        out.style.color = '#f87171';
-        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-        tg.showAlert('Установите в настройках Telegram юзернейм с приставкой Dada_Games (например: @Dadarba_Dada_Games).');
-      }
-    }
-    if (hasTagClaimed) document.getElementById('btn-tag').disabled = true;
-
-    // 4. MYSTERY BOX
-    function openMysteryBox() {
-      if (gems < 30) {
-        tg.showAlert('Не хватает алмазов! Нужно 30 💎');
-        return;
-      }
-      gems -= 30;
-      const drops = [10, 15, 25, 40, 50, 80, 150, 300];
-      const win = drops[Math.floor(Math.random() * drops.length)];
-      gems += win;
-      syncUI();
-
-      const box = document.getElementById('box-res');
-      box.style.display = 'block';
-      box.innerHTML = `🎁 ВЫПАЛО: <b>+${win} 💎</b> (Чистый итог: ${win >= 30 ? '+' : ''}${win - 30} 💎)`;
-      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-    }
-
-    // 5. КЛИКЕР С КОМБО
-    let taps = 0;
-    let combo = 1;
-    let lastTapTime = 0;
-
-    function clickEnergyCore() {
-      const now = Date.now();
-      if (now - lastTapTime < 350) combo = Math.min(combo + 1, 4);
-      else combo = 1;
-      lastTapTime = now;
-
-      taps += combo;
-      document.getElementById('tap-combo').textContent = `x${combo}`;
-      document.getElementById('tap-progress').textContent = taps;
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-
-      if (taps >= 25) {
-        taps = 0;
-        gems += 20;
-        syncUI();
-        document.getElementById('tap-progress').textContent = '0';
-        tg.showAlert('⚡ Энергия собрана! +20 💎 начислено!');
-      }
-    }
-
-    // 6. BRAWL STARS META
-    const metas = {
-      gem: "💎 Захват кристаллов: Отис, Лу, Сту, Тара (Контроль центра 67%)",
-      brawlball: "⚽ Броулбол: Фрэнк, Сэм, Макс, Мортис (Высокий пуш-потенциал)",
-      heist: "💰 Ограбление: Чак, Коллет, Вольт, Брок (ДПС по сейфу 80%+)",
-      solo: "💀 Одиночное ШД: Корделиус, Эдгар, Кит, Леон (Выживаемость в кустах)"
-    };
-    function showBrawlMeta() {
-      const val = document.getElementById('brawl-mode').value;
-      const b = document.getElementById('brawl-meta-box');
-      b.textContent = metas[val];
-    }
-
-    // 7. ROBLOX КОДЫ
-    const rbxCodes = [
-      "🔊 Boombox ID: 1843526173 (Phonk Cyber Remix)",
-      "🔊 Boombox ID: 9043827110 (Brawl Stars Drill Remix)",
-      "👑 Skin Asset: 694204812 (Cyberpunk Neon Mask)"
-    ];
-    function getRobloxCode() {
-      const res = document.getElementById('roblox-res');
-      res.style.display = 'block';
-      res.textContent = rbxCodes[Math.floor(Math.random() * rbxCodes.length)];
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-    }
-
-    // 8. VIP КЛЮЧ
-    function buyVipKey() {
-      if (gems < 100) {
-        tg.showAlert('Не хватает алмазов! Нужно 100 💎');
-        return;
-      }
-      gems -= 100;
-      syncUI();
-      const code = `NEXUS-VIP-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-      const res = document.getElementById('key-res');
-      res.style.display = 'block';
-      res.innerHTML = `КЛЮЧ: <b>${code}</b><br><small>Активируйте в боте при дропе</small>`;
-      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-    }
-
-    // 9. ГЕНЕРАТОР НИКОВ
-    const nicknames = [
-      "⚡ 乂Dadarba_God乂", "☠️ 乃尺卂山ㄥ_ズ工几ム", "👑 𝓥𝓘𝓟_𝓝𝓮𝔁𝓾𝓼", 
-      "🗡️ Shadow_Strike_2026", "🎮 尺ㄖ乃ㄥㄖ乂_乃ㄖ丂丂"
-    ];
-    function genGamerNick() {
-      const res = document.getElementById('nick-res');
-      res.style.display = 'block';
-      res.textContent = nicknames[Math.floor(Math.random() * nicknames.length)];
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-    }
-
-    // 10. AI ПРОМПТЫ
-    const prompts = {
-      copy: "⚡ 'Напиши продающий пост для Telegram в стиле Storytelling о заработке школьника на арбитраже...'",
-      mid: "🎨 'Futuristic cybernetic samurai in Tokyo neon street, 8k resolution, octane render, unreal engine 5 --ar 16:9'",
-      code: "💻 'Напиши каркас Telegram-бота на telegraf с обработкой инлайн-кнопок и сохранением баланса...'"
-    };
-    function genAiPrompt() {
-      const cat = document.getElementById('ai-cat').value;
-      const res = document.getElementById('prompt-res');
-      res.style.display = 'block';
-      res.textContent = prompts[cat];
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-    }
-
-    // 11. КАЛЬКУЛЯТОР ROI
-    function calcRoi() {
-      const b = parseFloat(document.getElementById('calc-budget').value) || 0;
-      const profit = Math.round(b * 1.85);
-      const res = document.getElementById('calc-res');
-      res.style.display = 'block';
-      res.innerHTML = `Прогноз: Выручка ~<b>${profit} ₽</b> (ROI: +85%). Чистая прибыль: <b>${profit - b} ₽</b>`;
-    }
-
-    // 12. ВИКТОРИНА
-    function answerQuiz(isCorrect) {
-      if (quizDone) {
-        tg.showAlert('Вы уже прошли этот тест!');
-        return;
-      }
-      const res = document.getElementById('quiz-res');
-      res.style.display = 'block';
-      if (isCorrect) {
-        gems += 40;
-        quizDone = true;
-        localStorage.setItem('nx_quiz_done', 'true');
-        syncUI();
-        res.textContent = '✅ Верно! Начислено +40 💎';
-        res.style.color = '#06d6a0';
-        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      } else {
-        res.textContent = '❌ Неверно! Sora генерирует видео, а не код.';
-        res.style.color = '#f87171';
+        box.textContent = `❌ В вашем нике @${tUser?.username || 'нет_ника'} нет фразы Dada_Games!`;
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
       }
     }
+
+    function joinClan(cName) {
+      if (!S.clan) S.gems += 20;
+      S.clan = cName;
+      document.getElementById('clan-out').textContent = `🛡️ Вы состоите в ордене: ${cName} (Бонус урона активен)`;
+      save();
+      showToast(`🛡️ Вы вступили в клан ${cName}!`);
+    }
+
+    function createGiftCheck() {
+      if (S.gold < 50) return showToast('❌ Нужно 50 🪙!');
+      S.gold -= 50;
+      const checkCode = `CHECK-50G-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+      document.getElementById('clan-out').textContent = `🧧 Чек создан: ${checkCode} (Отправь другу!)`;
+      save();
+      showToast('🧧 Подарочный чек выпущен!');
+    }
+
+    // ================= ЛОГИКА ВКЛАДКИ 6: 🤖 КИБЕР-ЛАБ & AI СТУДИЯ =================
+    function genLabContent(type) {
+      const data = {
+        schema: '💸 Связка 2026: Ведение игрового ТГ-канала с встроенным WebApp-кликером + монетизация через Обязательную Подписку (ОП) и продажу рекламы.',
+        prompt: '🧠 Промпт: "Спроектируй виральную игровую механику удержания аудитории для Telegram Mini App с ежедневными квестами..."',
+        shorts: '🎬 Хук для Shorts (0–3 сек): "Никогда не открывай этот секретный Starr Drop в 3 часа ночи, иначе..." (Удержание > 85%)'
+      };
+      document.getElementById('ai-lab-out').textContent = data[type];
+      playSfx(550, 'sine', 0.06);
+    }
+
+    function cipherText() {
+      const inp = document.getElementById('cipher-in').value || 'DadaGames';
+      const leet = inp.replace(/a/gi, '4').replace(/e/gi, '3').replace(/i/gi, '1').replace(/o/gi, '0').replace(/s/gi, '5');
+      document.getElementById('cyber-util-out').textContent = `🕵️ Шифр: ${leet} | HEX: ${ Array.from(inp).map(c => c.charCodeAt(0).toString(16)).join(' ') }`;
+    }
+    function genPassword() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%^&*';
+      let pass = '';
+      for (let i = 0; i < 14; i++) pass += chars[Math.floor(Math.random() * chars.length)];
+      document.getElementById('cyber-util-out').textContent = `🔑 Сгенерирован пароль: ${pass}`;
+    }
+    function calcTgRoi() {
+      const budget = parseFloat(document.getElementById('cipher-in').value) || 5000;
+      const subs = Math.round(budget / 18);
+      const rev = Math.round(budget * 1.95);
+      document.getElementById('cyber-util-out').textContent = `📈 Бюджет ${budget}₽ ➔ ~${subs} подписчиков по ОП ➔ Ожидаемый доход: ${rev}₽ (+95% ROI)`;
+    }
+
+    function exportSaveCode() {
+      const b64 = btoa(encodeURIComponent(JSON.stringify(S)));
+      document.getElementById('sync-out').textContent = `💾 Код сохранения: ${b64.substring(0, 45)}... (Скопировано в память)`;
+      showToast('💾 Бекап профиля создан!');
+    }
+
+    function sendStatsToBot() {
+      const payload = JSON.stringify({
+        release: 'V2',
+        lvl: S.lvl,
+        gems: S.gems,
+        gold: S.gold,
+        trophies: S.trophies,
+        keys: S.keys
+      });
+      document.getElementById('sync-out').textContent = '✅ Данные отправлены в Telegram-бота!';
+      showToast('🚀 Прогресс отправлен боту!');
+      try { tg.sendData(payload); } catch (e) {}
+    }
+
+    updateHUD();
   </script>
 </body>
 </html>
